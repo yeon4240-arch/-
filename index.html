@@ -58,9 +58,9 @@
             border-bottom: 1px solid var(--border-color);
             overflow-x: auto;
             white-space: nowrap;
-            -webkit-overflow-scrolling: touch; /* 모바일 부드러운 스크롤 */
+            -webkit-overflow-scrolling: touch;
         }
-        nav::-webkit-scrollbar { display: none; } /* 스크롤바 숨김 */
+        nav::-webkit-scrollbar { display: none; }
         .nav-inner {
             max-width: 1000px;
             margin: 0 auto;
@@ -205,7 +205,8 @@
         
         .edit-mode-box { display: flex; flex-direction: column; gap: 8px; background: #f8fafc; padding: 12px; border-radius: 8px; width: 100%; margin: 8px 0; border: 1px solid var(--border-color); }
 
-        .check-item { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border-color); }
+        .check-item { display: flex; flex-direction: column; align-items: stretch; padding: 10px 0; border-bottom: 1px solid var(--border-color); }
+        .check-main-row { display: flex; align-items: center; justify-content: space-between; width: 100%; }
         .check-label { display: flex; align-items: center; gap: 10px; cursor: pointer; flex: 1; font-size: 14px; min-width: 0; }
         .check-label input[type="checkbox"] { flex-shrink: 0; width: 20px; height: 20px; cursor: pointer; }
         .check-label.done span { text-decoration: line-through; color: var(--gray-muted); }
@@ -240,7 +241,6 @@
         .member-management-list { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
         .member-manage-item { display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; background: #f8fafc; border: 1px solid var(--border-color); border-radius: 8px; }
 
-        /* 모달 시스템 오픈 터치 대응 */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.4); z-index: 9999; justify-content: center; align-items: center; backdrop-filter: blur(2px); padding: 20px; }
         .modal-box { background: white; padding: 20px; border-radius: 12px; width: 100%; max-width: 300px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
         .modal-box p { font-size: 14px; font-weight: 600; margin-bottom: 14px; }
@@ -532,7 +532,6 @@
             window.scrollTo(0, 0);
         }
 
-        // 모바일 속도 최적화를 위한 부드러운 이미지 압축
         function compressImageAsync(file) {
             return new Promise((resolve) => {
                 const reader = new FileReader(); 
@@ -656,7 +655,7 @@
         }
 
         function deleteTravelMember(name) {
-            if(!confirm(`[${name}] 멤버를 삭제하시겠습니까?`)) return;
+            if(!confirm(`[${name}] 멤버를 정말 삭제하시겠습니까?`)) return;
             const p = getActive();
             p.members = p.members.filter(m => m.name !== name);
             if(appData.currentViewer === name) p.currentViewer = p.members[0] ? p.members[0].name : "기본멤버";
@@ -677,6 +676,7 @@
         }
 
         function confirmEditMemberName(idx) {
+            if(!confirm("멤버 이름을 수정하시겠습니까?")) return;
             const p = getActive();
             const newName = document.getElementById(`member-edit-field-${idx}`).value.trim();
             if(!newName) return;
@@ -793,27 +793,117 @@
                 return;
             }
 
+            // 날짜 목록 추출 함수
+            let dateOptions = '';
+            const start = new Date(p.startDate); const end = new Date(p.endDate);
+            if(!isNaN(start) && !isNaN(end) && start <= end) {
+                let curr = new Date(start);
+                while(curr <= end) {
+                    let dStr = curr.toISOString().split('T')[0];
+                    dateOptions += `<option value="${dStr}">${dStr}</option>`;
+                    curr.setDate(curr.getDate() + 1);
+                }
+            } else {
+                let dStr = new Date().toISOString().split('T')[0];
+                dateOptions += `<option value="${dStr}">${dStr}</option>`;
+            }
+
+            // 멤버 목록 추출 함수
+            let memberOptions = '<option value="all">공통 지출</option>';
+            p.members.forEach(m => { memberOptions += `<option value="${m.name}">${m.name}</option>`; });
+
             filtered.forEach(item => {
                 const li = document.createElement('li');
                 li.className = 'expense-item';
+                li.style.flexDirection = 'column';
+                li.style.alignItems = 'stretch';
+
                 let imgBox = item.img ? `<img src="${item.img}" class="attached-img" onclick="openImgViewer('${item.img}')">` : '';
                 let whoPay = item.member === 'all' ? '공통' : item.member;
+                
                 li.innerHTML = `
-                    <div class="expense-left">
-                        ${imgBox}
-                        <div class="expense-info">
-                            <span style="font-weight:700;">${item.title} <span style="color:var(--primary-color); font-size:12px;">[${whoPay}]</span></span>
-                            <span class="expense-date">${item.date}</span>
-                            <span class="currency-detail">${item.costInKrw.toLocaleString()}원 (${item.inputCost.toLocaleString()}${item.currencySign})</span>
+                    <div style="display:flex; justify-content:space-between; width:100%; align-items:center;" id="expense-view-box-${item.id}">
+                        <div class="expense-left">
+                            ${imgBox}
+                            <div class="expense-info">
+                                <span style="font-weight:700;">${item.title} <span style="color:var(--primary-color); font-size:12px;">[${whoPay}]</span></span>
+                                <span class="expense-date">${item.date}</span>
+                                <span class="currency-detail">${item.costInKrw.toLocaleString()}원 (${item.inputCost.toLocaleString()}${item.currencySign})</span>
+                            </div>
+                        </div>
+                        <div class="action-btns">
+                            <button class="btn-edit" onclick="activateExpenseEditMode(${item.id})">수정</button>
+                            <button class="btn-del" onclick="deleteExpense(${item.id})">삭제</button>
                         </div>
                     </div>
-                    <button class="btn-del" onclick="deleteExpense(${item.id})">삭제</button>
+                    <div class="edit-mode-box" id="expense-edit-box-${item.id}" style="display:none;">
+                        <div style="display:flex; gap:6px;">
+                            <select id="expense-edit-date-${item.id}">${dateOptions}</select>
+                            <select id="expense-edit-member-${item.id}">${memberOptions}</select>
+                        </div>
+                        <div style="display:flex; gap:6px;">
+                            <select id="expense-edit-currency-${item.id}" style="width:100px;">
+                                <option value="KRW">₩ KRW</option>
+                                <option value="JPY">¥ JPY</option>
+                                <option value="USD">$ USD</option>
+                                <option value="CNY">¥ CNY</option>
+                            </select>
+                            <input type="text" id="expense-edit-title-${item.id}" value="${item.title}" placeholder="내역 명">
+                            <input type="number" id="expense-edit-cost-${item.id}" value="${item.inputCost}" placeholder="금액" style="width:90px;">
+                        </div>
+                        <div style="margin: 4px 0;">
+                            <label class="file-label" style="font-size:12px; padding:6px;">📷 영수증/사진 수정
+                                <input type="file" id="expense-edit-img-${item.id}" class="file-input" accept="image/*">
+                            </label>
+                        </div>
+                        <div style="display:flex; gap:6px; justify-content:flex-end;">
+                            <button class="btn-main" onclick="confirmExpenseEdit(${item.id})">저장</button>
+                            <button class="btn-sub" onclick="cancelExpenseEdit(${item.id})">취소</button>
+                        </div>
+                    </div>
                 `;
                 listEl.appendChild(li);
+
+                // 값 세팅 보정
+                document.getElementById(`expense-edit-date-${item.id}`).value = item.date;
+                document.getElementById(`expense-edit-member-${item.id}`).value = item.member;
+                document.getElementById(`expense-edit-currency-${item.id}`).value = item.currency === 'all' ? 'KRW' : item.currency;
             });
         }
 
+        function activateExpenseEditMode(id) {
+            document.getElementById(`expense-view-box-${id}`).style.display = 'none';
+            document.getElementById(`expense-edit-box-${id}`).style.display = 'flex';
+        }
+        function cancelExpenseEdit(id) {
+            document.getElementById(`expense-view-box-${id}`).style.display = 'flex';
+            document.getElementById(`expense-edit-box-${id}`).style.display = 'none';
+        }
+        async function confirmExpenseEdit(id) {
+            if(!confirm("이 지출 내역을 수정하시겠습니까?")) return;
+            const p = getActive(); let item = p.expenses.find(e => e.id === id); if(!item) return;
+            
+            const newTitle = document.getElementById(`expense-edit-title-${id}`).value.trim();
+            const newCost = parseFloat(document.getElementById(`expense-edit-cost-${id}`).value);
+            if(!newTitle || isNaN(newCost)) return;
+
+            const newCurrency = document.getElementById(`expense-edit-currency-${id}`).value;
+            item.date = document.getElementById(`expense-edit-date-${id}`).value;
+            item.member = document.getElementById(`expense-edit-member-${id}`).value;
+            item.title = newTitle;
+            item.inputCost = newCost;
+            item.currency = newCurrency;
+            item.currencySign = newCurrency === 'JPY' ? '¥' : newCurrency === 'USD' ? '$' : newCurrency === 'CNY' ? '¥' : '₩';
+            item.costInKrw = Math.round(newCurrency === 'JPY' ? (newCost/100)*exchangeRates.JPY : newCurrency === 'USD' ? newCost*exchangeRates.USD : newCurrency === 'CNY' ? newCost*exchangeRates.CNY : newCost);
+
+            const imgFile = document.getElementById(`expense-edit-img-${id}`).files[0];
+            if(imgFile) item.img = await compressImageAsync(imgFile);
+
+            saveData(); updateBudget(); renderExpenseList();
+        }
+
         function deleteExpense(id) {
+            if(!confirm("이 지출 내역을 정말 삭제하시겠습니까?")) return;
             const p = getActive(); p.expenses = p.expenses.filter(e => e.id !== id);
             saveData(); updateBudget(); renderExpenseList();
         }
@@ -864,7 +954,7 @@
 
         function deleteWishCat(key, e) {
             e.stopPropagation();
-            if(!confirm("이 카테고리를 삭제할까요?")) return;
+            if(!confirm("이 카테고리를 정말 삭제하시겠습니까? 관련 상품들의 분류 탭이 유실될 수 있습니다.")) return;
             appData.wishCategories = appData.wishCategories.filter(c => c.key !== key);
             if(currentWishTab === key) currentWishTab = 'all';
             saveData(); renderWishCategoryTabs(); renderWishCatSelect(); renderWishList();
@@ -894,7 +984,7 @@
 
             if(imgInput.files && imgInput.files[0]) {
                 let base64 = await compressImageAsync(imgInput.files[0]);
-                saveWish(base64); // b64 에러 원인 수정 완료
+                saveWish(base64);
             } else { saveWish(''); }
         }
 
@@ -966,6 +1056,7 @@
             document.getElementById(`wish-edit-box-${id}`).style.display = 'none';
         }
         async function confirmWishEdit(id) {
+            if(!confirm("이 위시리스트 항목을 수정하시겠습니까?")) return;
             const p = getActive(); let item = p.wishItems.find(w => w.id === id); if(!item) return;
             const newTitle = document.getElementById(`wish-edit-title-${id}`).value.trim(); if(!newTitle) return;
 
@@ -983,6 +1074,7 @@
             saveData(); renderWishList();
         }
         function deleteWishItem(id) {
+            if(!confirm("이 위시리스트 항목을 정말 삭제하시겠습니까?")) return;
             const p = getActive(); p.wishItems = p.wishItems.filter(w => w.id !== id);
             saveData(); renderWishList();
         }
@@ -1011,21 +1103,60 @@
             }
             filtered.forEach(item => {
                 const div = document.createElement('div'); div.className = 'check-item';
+                
+                let catLabel = item.cat === 'essential' ? '필수' : item.cat === 'clothing' ? '의류' : '기타';
+
                 div.innerHTML = `
-                    <label class="check-label ${item.done ? 'done' : ''}">
-                        <input type="checkbox" ${item.done ? 'checked' : ''} onchange="toggleTodo(${item.id})">
-                        <span>${item.text}</span>
-                    </label>
-                    <button class="btn-del" onclick="deleteTodo(${item.id})">삭제</button>
+                    <div class="check-main-row" id="pack-view-box-${item.id}">
+                        <label class="check-label ${item.done ? 'done' : ''}">
+                            <input type="checkbox" ${item.done ? 'checked' : ''} onchange="toggleTodo(${item.id})">
+                            <span><strong style="color:var(--primary-color);">[${catLabel}]</strong> ${item.text}</span>
+                        </label>
+                        <div class="action-btns">
+                            <button class="btn-sub" onclick="activatePackEditMode(${item.id})">수정</button>
+                            <button class="btn-del" onclick="deleteTodo(${item.id})">삭제</button>
+                        </div>
+                    </div>
+                    <div class="edit-mode-box" id="pack-edit-box-${item.id}" style="display:none; flex-direction:row; gap:6px; align-items:center;">
+                        <select id="pack-edit-cat-${item.id}" style="width:90px;">
+                            <option value="essential">필수품</option>
+                            <option value="clothing">의류/세면</option>
+                            <option value="etc">기타</option>
+                        </select>
+                        <input type="text" id="pack-edit-text-${item.id}" value="${item.text}" style="flex:1;">
+                        <button class="btn-main" onclick="confirmPackEdit(${item.id})" style="padding:8px 12px;">저장</button>
+                        <button class="btn-sub" onclick="cancelPackEdit(${item.id})" style="padding:8px 12px;">취소</button>
+                    </div>
                 `;
                 container.appendChild(div);
+                document.getElementById(`pack-edit-cat-${item.id}`).value = item.cat;
             });
         }
+
+        function activatePackEditMode(id) {
+            document.getElementById(`pack-view-box-${id}`).style.display = 'none';
+            document.getElementById(`pack-edit-box-${id}`).style.display = 'flex';
+        }
+        function cancelPackEdit(id) {
+            document.getElementById(`pack-view-box-${id}`).style.display = 'flex';
+            document.getElementById(`pack-edit-box-${id}`).style.display = 'none';
+        }
+        function confirmPackEdit(id) {
+            if(!confirm("준비물 내용을 변경하시겠습니까?")) return;
+            const p = getActive(); let item = p.packItems.find(t => t.id === id); if(!item) return;
+            const newTxt = document.getElementById(`pack-edit-text-${id}`).value.trim(); if(!newTxt) return;
+            
+            item.cat = document.getElementById(`pack-edit-cat-${id}`).value;
+            item.text = newTxt;
+            saveData(); renderPack();
+        }
+
         function toggleTodo(id) {
             const p = getActive(); let item = p.packItems.find(t => t.id === id); if(item) item.done = !item.done;
             saveData(); renderPack();
         }
         function deleteTodo(id) {
+            if(!confirm("이 준비물 항목을 정말 삭제하시겠습니까?")) return;
             const p = getActive(); p.packItems = p.packItems.filter(t => t.id !== id);
             saveData(); renderPack();
         }
@@ -1139,6 +1270,7 @@
             document.getElementById(`plan-edit-box-${id}`).style.display = 'none';
         }
         async function confirmPlanEdit(dayKey, id) {
+            if(!confirm("이 일정을 수정하시겠습니까?")) return;
             const p = getActive(); let items = p.targetSchedule[dayKey] || []; let item = items.find(i => i.id === id); if(!item) return;
             const loc = document.getElementById(`plan-edit-location-${id}`).value.trim(); if(!loc) return;
 
@@ -1151,6 +1283,7 @@
             saveData(); renderTimeline();
         }
         function deleteTimelineItem(dayKey, id) {
+            if(!confirm("이 일정을 정말 삭제하시겠습니까?")) return;
             const p = getActive(); if(p.targetSchedule[dayKey]) { p.targetSchedule[dayKey] = p.targetSchedule[dayKey].filter(item => item.id !== id); saveData(); renderTimeline(); }
         }
 
@@ -1200,6 +1333,7 @@
             });
         }
         function deleteDiary(id) {
+            if(!confirm("이 일기를 정말 삭제하시겠습니까?")) return;
             const p = getActive(); p.diaries = p.diaries.filter(d => d.id !== id); saveData(); renderDiaries();
         }
 
@@ -1264,7 +1398,7 @@
         
         function deleteTravelProject() {
             if(Object.keys(appData.projects).length <= 1) { alert("최소 한 개의 폴더는 있어야 합니다."); return; }
-            if(confirm(`[${appData.currentProject}] 폴더를 삭제할까요?`)) { 
+            if(confirm(`[${appData.currentProject}] 다이어리 폴더 전체를 정말 삭제하시겠습니까? 내부의 모든 데이터가 유실됩니다.`)) { 
                 delete appData.projects[appData.currentProject]; appData.currentProject = Object.keys(appData.projects)[0]; 
                 saveData(); initProjectDropdown(); loadProjectAll(); 
             }
@@ -1301,13 +1435,13 @@
                 try {
                     const imported = JSON.parse(e.target.result);
                     if(imported.projects) { appData = imported; saveData(); alert("복구 성공!"); loadProjectAll(); initProjectDropdown(); }
-                } catch(err) { alert("올바른 파일이 아닙니다."); }
+                } catch(err) { alert("올바른 백업 파일이 아닙니다."); }
             };
             reader.readAsText(input.files[0]);
         }
 
         function forceResetApp() {
-            if(confirm("모든 데이터를 초기화할까요?")) { localStorage.removeItem('travelArchiveData_v7_modern'); appData = null; initStorage(); initProjectDropdown(); loadProjectAll(); }
+            if(confirm("이 작업은 되돌릴 수 없습니다. 앱의 모든 폴더와 데이터를 공장 초기화할까요?")) { localStorage.removeItem('travelArchiveData_v7_modern'); appData = null; initStorage(); initProjectDropdown(); loadProjectAll(); }
         }
 
         function fetchWeather() {
