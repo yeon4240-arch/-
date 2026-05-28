@@ -2,11 +2,11 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>여행 아카이브 ✈️</title>
     <style>
         :root {
-            --primary-color: #2563eb; /* 신뢰감을 주는 모던 블루 */
+            --primary-color: #2563eb; 
             --primary-hover: #1d4ed8;
             --secondary-color: #f8fafc;
             --accent-color: #ef4444;
@@ -24,9 +24,9 @@
             font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Noto Sans KR', sans-serif;
             font-size: 14px;
             line-height: 1.5;
+            -webkit-text-size-adjust: none;
         }
 
-        /* 네비게이션 및 헤더 상단 고정 */
         header {
             background: var(--card-bg);
             border-bottom: 1px solid var(--border-color);
@@ -38,45 +38,48 @@
         .header-inner {
             max-width: 1000px;
             margin: 0 auto;
-            padding: 15px 20px;
+            padding: 12px 16px;
             display: flex;
-            justify-content: space-between;
-            align-items: center;
+            flex-direction: column;
+            gap: 4px;
+            align-items: flex-start;
+        }
+        @media (min-width: 480px) {
+            .header-inner { flex-direction: row; justify-content: space-between; align-items: center; }
         }
         .header-inner h1 {
-            font-size: 20px;
+            font-size: 18px;
             font-weight: 700;
             color: var(--primary-color);
         }
 
-        /* 네비게이션 바 스타일 */
         nav {
             background: var(--card-bg);
             border-bottom: 1px solid var(--border-color);
             overflow-x: auto;
             white-space: nowrap;
+            -webkit-overflow-scrolling: touch; /* 모바일 부드러운 스크롤 */
         }
+        nav::-webkit-scrollbar { display: none; } /* 스크롤바 숨김 */
         .nav-inner {
             max-width: 1000px;
             margin: 0 auto;
             display: flex;
-            padding: 0 10px;
+            padding: 0 8px;
         }
         .nav-btn {
             background: none;
             border: none;
-            padding: 14px 20px;
+            padding: 14px 16px;
             font-size: 14px;
             font-weight: 600;
             color: var(--gray-muted);
             cursor: pointer;
             position: relative;
             transition: color 0.2s;
+            flex-shrink: 0;
         }
-        .nav-btn:hover {
-            color: var(--primary-color);
-        }
-        .nav-btn.active {
+        .nav-btn:hover, .nav-btn.active {
             color: var(--primary-color);
         }
         .nav-btn.active::after {
@@ -89,42 +92,40 @@
             background: var(--primary-color);
         }
 
-        /* 메인 컨테이너 및 페이지 구조 */
         #app-wrapper {
             max-width: 1000px;
-            margin: 20px auto;
-            padding: 0 20px 40px 20px;
+            margin: 12px auto;
+            padding: 0 12px 60px 12px;
         }
         
-        .page-content {
-            display: none; /* 기본 숨김 */
-        }
-        .page-content.active {
-            display: block; /* 활성화된페이지만 표시 */
-        }
+        .page-content { display: none; }
+        .page-content.active { display: block; }
 
         .section { 
             background: var(--card-bg); 
             border-radius: 12px; 
-            padding: 24px; 
-            margin-bottom: 24px; 
+            padding: 16px; 
+            margin-bottom: 16px; 
             border: 1px solid var(--border-color);
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02), 0 2px 4px -1px rgba(0,0,0,0.01);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+        }
+        @media (min-width: 600px) {
+            .section { padding: 24px; margin-bottom: 24px; }
         }
         .section h2 { 
             font-size: 16px; 
             font-weight: 700; 
-            margin-bottom: 16px; 
+            margin-bottom: 14px; 
             color: #0f172a;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
         }
 
-        /* 깔끔하고 모던한 UI 요소 */
-        .backup-zone { background: #f8fafc; border: 1px solid var(--border-color); padding: 16px; border-radius: 8px; margin-bottom: 24px; }
-        .backup-btns { display: flex; gap: 8px; margin-top: 10px; }
-        
+        .backup-zone { background: #f8fafc; border: 1px solid var(--border-color); padding: 14px; border-radius: 8px; margin-bottom: 16px; }
+        .backup-btns { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+        .backup-btns > * { flex: 1 1 calc(50% - 4px); min-width: 100px; text-align: center; }
+
         button { 
             font-family: inherit;
             cursor: pointer; 
@@ -132,25 +133,35 @@
             border-radius: 6px;
             font-weight: 500;
             transition: all 0.2s;
+            padding: 10px 14px;
+            font-size: 14px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
         }
-        .btn-main { background: var(--primary-color); color: white; padding: 10px 16px; font-size: 14px; }
+        .btn-main { background: var(--primary-color); color: white; }
         .btn-main:hover { background: var(--primary-hover); }
-        .btn-sub { background: #e2e8f0; color: #334155; padding: 10px 16px; font-size: 14px; }
+        .btn-sub { background: #e2e8f0; color: #334155; }
         .btn-sub:hover { background: #cbd5e1; }
-        .btn-del { background: #fef2f2; color: var(--accent-color); border: 1px solid #fee2e2; padding: 6px 12px; font-size: 13px; }
+        .btn-del { background: #fef2f2; color: var(--accent-color); border: 1px solid #fee2e2; }
         .btn-del:hover { background: #fee2e2; }
-        .btn-edit { background: #fff7ed; color: #ea580c; border: 1px solid #ffedd5; padding: 6px 12px; font-size: 13px; }
+        .btn-edit { background: #fff7ed; color: #ea580c; border: 1px solid #ffedd5; }
         .btn-edit:hover { background: #ffedd5; }
 
-        .travel-selector { background: #f8fafc; padding: 20px; border-radius: 8px; margin-bottom: 24px; border: 1px solid var(--border-color); }
+        .travel-selector { background: #f8fafc; padding: 16px; border-radius: 8px; margin-bottom: 16px; border: 1px solid var(--border-color); }
         
-        .category-tabs { display: flex; gap: 6px; margin-bottom: 16px; overflow-x: auto; padding-bottom: 4px; }
-        .tab-btn { padding: 8px 16px; border: 1px solid var(--border-color); background: #f8fafc; color: var(--gray-muted); font-size: 13px; border-radius: 20px; white-space: nowrap; }
+        .category-tabs { display: flex; gap: 6px; margin-bottom: 14px; overflow-x: auto; padding-bottom: 6px; -webkit-overflow-scrolling: touch; }
+        .category-tabs::-webkit-scrollbar { display: none; }
+        .tab-btn { padding: 6px 14px; border: 1px solid var(--border-color); background: #f8fafc; color: var(--gray-muted); font-size: 13px; border-radius: 20px; white-space: nowrap; flex-shrink: 0; }
         .tab-btn.active { background: var(--primary-color); color: white; border-color: var(--primary-color); font-weight: 600; }
 
-        .input-row { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 12px; align-items: center; }
+        .input-row { display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
+        @media (min-width: 600px) {
+            .input-row { flex-direction: row; align-items: center; }
+        }
+
         input, select, textarea { 
-            padding: 10px 14px; 
+            padding: 10px 12px; 
             border: 1px solid var(--border-color); 
             border-radius: 6px; 
             font-size: 14px; 
@@ -158,89 +169,92 @@
             font-family: inherit;
             background: #fff;
             color: var(--text-color);
+            width: 100%;
+        }
+        @media (min-width: 600px) {
+            input, select, textarea { width: auto; flex: 1; }
         }
         input:focus, select:focus, textarea:focus {
             border-color: var(--primary-color);
             box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
         }
-        input[type="text"], input[type="number"], input[type="time"], input[type="date"], select, textarea { flex: 1; min-width: 120px; }
-        textarea { resize: none; height: 100px; }
+        textarea { resize: none; height: 90px; }
         
-        .file-label { padding: 10px 14px; background: #fff; border-radius: 6px; font-size: 14px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; border: 1px solid var(--border-color); color: var(--text-color); white-space: nowrap; gap: 6px;}
+        .file-label { padding: 10px 12px; background: #fff; border-radius: 6px; font-size: 14px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; border: 1px solid var(--border-color); color: var(--text-color); white-space: nowrap; gap: 6px; width: 100%; }
+        @media (min-width: 600px) { .file-label { width: auto; } }
         .file-input { display: none; }
 
-        .attached-img { width: 48px; height: 48px; object-fit: cover; border-radius: 6px; border: 1px solid var(--border-color); margin-right: 12px; cursor: pointer; }
-        .budget-summary { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
-        .budget-box { background: #f8fafc; border: 1px solid var(--border-color); padding: 16px; border-radius: 8px; text-align: center; }
-        .budget-box span { font-size: 13px; color: var(--gray-muted); font-weight: 500; }
-        .budget-box p { font-size: 18px; font-weight: 700; margin-top: 6px; }
+        .attached-img { width: 50px; height: 50px; object-fit: cover; border-radius: 6px; border: 1px solid var(--border-color); margin-right: 10px; cursor: pointer; flex-shrink: 0; }
+        .budget-summary { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+        .budget-box { background: #f8fafc; border: 1px solid var(--border-color); padding: 12px; border-radius: 8px; text-align: center; }
+        .budget-box span { font-size: 12px; color: var(--gray-muted); font-weight: 500; }
+        .budget-box p { font-size: 16px; font-weight: 700; margin-top: 4px; }
         
         .expense-list { list-style: none; }
-        .expense-item { display: flex; justify-content: space-between; align-items: center; padding: 14px 4px; border-bottom: 1px solid var(--border-color); }
+        .expense-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border-color); }
         .expense-left { display: flex; align-items: center; width: 75%; }
-        .expense-info { display: flex; flex-direction: column; width: 100%; }
+        .expense-info { display: flex; flex-direction: column; width: 100%; min-width: 0; }
+        .expense-info span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .expense-date { font-size: 12px; color: var(--gray-muted); margin-top: 2px; }
         .currency-detail { font-size: 13px; color: var(--gray-muted); margin-top: 2px; }
-        .action-btns { display: flex; gap: 6px; flex-shrink: 0; }
+        .action-btns { display: flex; gap: 4px; flex-shrink: 0; }
+        .action-btns button { padding: 6px 10px; font-size: 12px; }
 
-        .wish-badge { font-size: 11px; padding: 2px 8px; border-radius: 4px; font-weight: bold; width: max-content; margin-bottom: 4px; color: white; }
+        .wish-badge { font-size: 11px; padding: 2px 6px; border-radius: 4px; font-weight: bold; width: max-content; margin-bottom: 4px; color: white; }
         .link-url { font-size: 13px; color: var(--primary-color); text-decoration: none; display: inline-flex; align-items: center; gap: 4px; margin-top: 4px; font-weight: 500; }
-        .link-url:hover { text-decoration: underline; }
-        .edit-mode-box { display: flex; flex-direction: column; gap: 8px; background: #f8fafc; padding: 14px; border-radius: 8px; width: 100%; margin: 8px 0; border: 1px solid var(--border-color); }
+        
+        .edit-mode-box { display: flex; flex-direction: column; gap: 8px; background: #f8fafc; padding: 12px; border-radius: 8px; width: 100%; margin: 8px 0; border: 1px solid var(--border-color); }
 
-        .check-item { display: flex; align-items: center; justify-content: space-between; padding: 12px 4px; border-bottom: 1px solid var(--border-color); }
-        .check-label { display: flex; align-items: center; gap: 12px; cursor: pointer; flex: 1; font-size: 14px; }
-        .check-label input[type="checkbox"] { flex: none; width: 18px; height: 18px; cursor: pointer; }
+        .check-item { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border-color); }
+        .check-label { display: flex; align-items: center; gap: 10px; cursor: pointer; flex: 1; font-size: 14px; min-width: 0; }
+        .check-label input[type="checkbox"] { flex-shrink: 0; width: 20px; height: 20px; cursor: pointer; }
         .check-label.done span { text-decoration: line-through; color: var(--gray-muted); }
+        .check-label span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-        .timeline { position: relative; padding-left: 20px; margin-top: 16px; }
+        .timeline { position: relative; padding-left: 16px; margin-top: 12px; }
         .timeline::before { content: ''; position: absolute; left: 4px; top: 8px; bottom: 8px; width: 2px; background: var(--border-color); }
-        .timeline-item { position: relative; padding-bottom: 20px; display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid var(--border-color); margin-bottom: 16px; }
-        .timeline-item::after { content: ''; position: absolute; left: -19px; top: 6px; width: 8px; height: 8px; border-radius: 50%; background: #fff; border: 3px solid var(--primary-color); }
-        .day-badge { background: #f1f5f9; color: #334155; font-size: 12px; padding: 2px 8px; border-radius: 4px; margin-bottom: 6px; display: inline-block; font-weight: 600; }
+        .timeline-item { position: relative; padding-bottom: 16px; display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid var(--border-color); margin-bottom: 12px; }
+        .timeline-item::after { content: ''; position: absolute; left: -15px; top: 6px; width: 6px; height: 6px; border-radius: 50%; background: #fff; border: 2px solid var(--primary-color); }
+        .day-badge { background: #f1f5f9; color: #334155; font-size: 11px; padding: 2px 6px; border-radius: 4px; margin-bottom: 4px; display: inline-block; font-weight: 600; }
         .time { font-size: 13px; font-weight: 700; color: var(--primary-color); }
         .location { font-size: 15px; font-weight: 700; color: #0f172a; margin: 2px 0; }
         .memo { font-size: 13px; color: var(--gray-muted); margin-bottom: 4px; }
         .timeline-img { width: 60px; height: 60px; object-fit: cover; border-radius: 6px; border: 1px solid var(--border-color); margin-top: 6px; cursor: pointer; }
 
-        .diary-card { border-bottom: 1px solid var(--border-color); padding: 20px 0; }
+        .diary-card { border-bottom: 1px solid var(--border-color); padding: 16px 0; }
         .diary-card:last-child { border-bottom: none; }
-        .diary-date { font-size: 14px; font-weight: 700; color: var(--primary-color); margin-bottom: 8px; }
+        .diary-date { font-size: 14px; font-weight: 700; color: var(--primary-color); }
         
-        .diary-img-container { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
-        .diary-img { width: calc(25% - 6px); min-width: 80px; height: 100px; object-fit: cover; border-radius: 6px; border: 1px solid var(--border-color); cursor: pointer; transition: transform 0.2s; }
-        .diary-img:hover { transform: scale(1.03); }
-        .diary-text { font-size: 14px; line-height: 1.6; color: var(--text-color); background: #f8fafc; padding: 14px; border: 1px solid var(--border-color); border-radius: 8px; white-space: pre-wrap; }
+        .diary-img-container { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0; }
+        .diary-img { width: calc(33.33% - 4px); height: 85px; object-fit: cover; border-radius: 6px; border: 1px solid var(--border-color); cursor: pointer; }
+        .diary-text { font-size: 14px; line-height: 1.5; color: var(--text-color); background: #f8fafc; padding: 12px; border: 1px solid var(--border-color); border-radius: 8px; white-space: pre-wrap; }
 
-        .weather-widget { background: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe; border-radius: 8px; padding: 16px; margin-bottom: 24px; }
-        .weather-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; border-bottom: 1px solid #bfdbfe; padding-bottom: 8px; }
-        .weather-header select { background: #fff; border: 1px solid #bfdbfe; padding: 6px; font-size: 13px; border-radius: 4px; }
+        .weather-widget { background: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe; border-radius: 8px; padding: 14px; margin-bottom: 16px; }
+        .weather-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; border-bottom: 1px solid #bfdbfe; padding-bottom: 6px; }
+        .weather-header select { background: #fff; border: 1px solid #bfdbfe; padding: 4px 6px; font-size: 13px; border-radius: 4px; width: auto; }
         .weather-body { display: flex; align-items: center; justify-content: space-between; }
-        .weather-temp { font-size: 28px; font-weight: 800; }
-        .weather-info { text-align: right; font-size: 13px; line-height: 1.4; }
-        .duration-display { font-size: 13px; color: var(--primary-color); font-weight: 600; background: #fff; border: 1px solid var(--border-color); padding: 6px 12px; border-radius: 6px; display: inline-block; margin-top: 6px; }
+        .weather-temp { font-size: 24px; font-weight: 800; }
+        .weather-info { text-align: right; font-size: 12px; line-height: 1.4; }
+        .duration-display { font-size: 13px; color: var(--primary-color); font-weight: 600; background: #fff; border: 1px solid var(--border-color); padding: 6px 12px; border-radius: 6px; display: inline-block; }
 
-        .member-management-list { display: flex; flex-direction: column; gap: 10px; margin-top: 12px; }
-        .member-manage-item { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: #f8fafc; border: 1px solid var(--border-color); border-radius: 8px; }
-        .member-name-text { font-size: 14px; font-weight: 600; }
+        .member-management-list { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
+        .member-manage-item { display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; background: #f8fafc; border: 1px solid var(--border-color); border-radius: 8px; }
 
-        /* 모달 시스템 */
-        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.4); z-index: 9999; justify-content: center; align-items: center; backdrop-filter: blur(2px); }
-        .modal-box { background: white; padding: 24px; border-radius: 12px; border: 1px solid var(--border-color); text-align: center; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); width: 300px; }
-        .modal-box p { font-size: 14px; font-weight: 600; color: var(--text-color); margin-bottom: 16px; }
+        /* 모달 시스템 오픈 터치 대응 */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.4); z-index: 9999; justify-content: center; align-items: center; backdrop-filter: blur(2px); padding: 20px; }
+        .modal-box { background: white; padding: 20px; border-radius: 12px; width: 100%; max-width: 300px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        .modal-box p { font-size: 14px; font-weight: 600; margin-bottom: 14px; }
 
-        .img-viewer-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 99999; justify-content: center; align-items: center; }
-        .img-viewer-overlay img { max-width: 90vw; max-height: 85vh; border-radius: 4px; box-shadow: 0 0 20px rgba(0,0,0,0.5); }
-        .img-viewer-close { position: absolute; top: 20px; right: 20px; color: white; font-size: 28px; cursor: pointer; font-weight: bold; }
+        .img-viewer-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 99999; justify-content: center; align-items: center; }
+        .img-viewer-overlay img { max-width: 95vw; max-height: 80vh; object-fit: contain; }
+        .img-viewer-close { position: absolute; top: 16px; right: 16px; color: white; font-size: 32px; cursor: pointer; padding: 10px; }
 
-        .cat-add-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.4); z-index: 9999; justify-content: center; align-items: center; backdrop-filter: blur(2px); }
-        .cat-add-box { background: white; padding: 24px; border-radius: 12px; border: 1px solid var(--border-color); width: 320px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
-        .cat-add-box h3 { font-size: 15px; font-weight: 700; margin-bottom: 12px; color: #0f172a; }
+        .cat-add-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.4); z-index: 9999; justify-content: center; align-items: center; backdrop-filter: blur(2px); padding: 20px; }
+        .cat-add-box { background: white; padding: 20px; border-radius: 12px; width: 100%; max-width: 320px; }
+        .cat-add-box h3 { font-size: 15px; font-weight: 700; margin-bottom: 10px; }
         .cat-add-box input { width: 100%; margin-bottom: 12px; }
         .cat-add-actions { display: flex; gap: 8px; }
-
-        .cat-tab-del { font-size: 11px; margin-left: 6px; color: var(--gray-muted); cursor: pointer; }
-        .cat-tab-del:hover { color: var(--accent-color); }
+        .cat-tab-del { font-size: 12px; margin-left: 6px; color: var(--gray-muted); padding: 2px 4px; }
     </style>
 </head>
 <body>
@@ -271,7 +285,7 @@
         <div id="page-dashboard" class="page-content active">
             <div class="weather-widget">
                 <div class="weather-header">
-                    <span style="font-weight: 700; font-size: 14px; display: flex; align-items: center; gap: 6px;">🌤️ 현지 날씨 정보</span>
+                    <span style="font-weight: 700; font-size: 14px;">🌤️ 현지 날씨 정보</span>
                     <select id="weather-city-select" onchange="fetchWeather()">
                         <option value="Tokyo">🇯🇵 도쿄</option>
                         <option value="Osaka">🇯🇵 오사카</option>
@@ -289,11 +303,11 @@
 
             <div class="travel-selector">
                 <h2 style="font-size: 14px; margin-bottom: 10px; color:#334155;">📁 다이어리 폴더 선택</h2>
-                <div style="display: flex; gap: 8px; margin-bottom: 12px;">
+                <div class="input-row">
                     <select id="travel-picker" onchange="changeTravel()"></select>
                     <button class="btn-del" onclick="deleteTravelProject()">폴더 전체 삭제</button>
                 </div>
-                <div style="display: flex; gap: 8px;">
+                <div class="input-row" style="margin-top: 8px;">
                     <input type="text" id="new-travel-name" placeholder="새 다이어리 폴더명 입력">
                     <button class="btn-main" onclick="createNewTravel()">새 폴더 생성</button>
                 </div>
@@ -302,12 +316,12 @@
             <div class="backup-zone">
                 <label style="font-size: 13px; font-weight: 700; color: #334155;">💾 시스템 데이터 관리</label>
                 <div class="backup-btns">
-                    <button class="btn-sub" style="flex:1;" onclick="exportDataBackup()">📥 데이터 백업 받기</button>
-                    <label class="file-label" style="flex: 1; padding: 0;">
-                        <span style="width:100%; text-align:center; display:block; padding:10px 0;">📤 백업 파일 복구</span>
+                    <button class="btn-sub" onclick="exportDataBackup()">📥 백업 다운</button>
+                    <label class="file-label">
+                        <span>📤 백업 복구</span>
                         <input type="file" id="backup-file-input" class="file-input" accept=".json" onchange="importDataBackup(this)">
                     </label>
-                    <button class="btn-del" onclick="forceResetApp()" style="flex: 0.6; font-weight:700;">🚨 앱 초기화</button>
+                    <button class="btn-del" onclick="forceResetApp()">🚨 앱 초기화</button>
                 </div>
             </div>
         </div>
@@ -321,22 +335,22 @@
                 </div>
                 <div class="member-management-list" id="member-badge-container"></div>
                 
-                <div class="input-row" style="margin-top: 20px; border-top: 1px solid var(--border-color); padding-top: 16px;">
-                    <label style="font-size: 13px; font-weight: 700; color: #475569; width: 100%;">👤 현재 앱 조작 중인 닉네임 필터링 :</label>
-                    <select id="app-current-viewer" onchange="changeAppViewer()" style="max-width: 250px; margin-top: 6px;"></select>
+                <div style="margin-top: 16px; border-top: 1px solid var(--border-color); padding-top: 12px;">
+                    <label style="font-size: 13px; font-weight: 700; color: #475569;">👤 현재 사용자 조작 닉네임 :</label>
+                    <select id="app-current-viewer" onchange="changeAppViewer()" style="margin-top: 6px;"></select>
                 </div>
             </div>
 
             <div class="section">
                 <h2>📅 여행 기간 일정 설정</h2>
                 <div class="input-row">
-                    <div style="flex: 1;">
+                    <div style="flex: 1; width: 100%;">
                         <label style="font-size: 12px; color:var(--gray-muted); display:block; margin-bottom:4px;">출발일</label>
-                        <input type="date" id="travel-start-date" onchange="updateTravelPeriod()" style="width:100%;">
+                        <input type="date" id="travel-start-date" onchange="updateTravelPeriod()">
                     </div>
-                    <div style="flex: 1;">
+                    <div style="flex: 1; width: 100%;">
                         <label style="font-size: 12px; color:var(--gray-muted); display:block; margin-bottom:4px;">도착일</label>
-                        <input type="date" id="travel-end-date" onchange="updateTravelPeriod()" style="width:100%;">
+                        <input type="date" id="travel-end-date" onchange="updateTravelPeriod()">
                     </div>
                 </div>
             </div>
@@ -357,12 +371,12 @@
                 <div class="budget-summary">
                     <div class="budget-box">
                         <span id="budget-owner-title">총 예산 (KRW)</span>
-                        <input type="number" id="total-budget" value="1000000" oninput="updateBudget()" style="width:100%; text-align:center; padding:6px; margin-top:6px;">
+                        <input type="number" id="total-budget" value="1000000" style="text-align:center; padding:4px; margin-top:4px;">
                     </div>
-                    <div class="budget-box"><span>잔여 예산 (KRW)</span><p id="remaining-amount" style="color: var(--primary-color);">0 원</p></div>
+                    <div class="budget-box"><span>잔여 예산</span><p id="remaining-amount" style="color: var(--primary-color);">0 원</p></div>
                 </div>
-                <div class="budget-summary" style="margin-top:-6px; margin-bottom:16px;">
-                    <div class="budget-box" style="grid-column: span 2;"><span>사용 금액 (KRW)</span><p id="used-amount" style="color: var(--accent-color);">0 원</p></div>
+                <div class="budget-summary" style="margin-top:-6px;">
+                    <div class="budget-box" style="grid-column: span 2;"><span>사용 금액</span><p id="used-amount" style="color: var(--accent-color);">0 원</p></div>
                 </div>
                 
                 <div class="input-row">
@@ -379,7 +393,7 @@
                 <div class="input-row">
                     <input type="text" id="expense-title" placeholder="지출 내역 항목명">
                     <input type="number" id="expense-cost" placeholder="지출 금액">
-                    <label class="file-label" style="flex:none;">📷 사진 추가<input type="file" id="expense-img-input" class="file-input" accept="image/*"></label>
+                    <label class="file-label">📷 사진 추가<input type="file" id="expense-img-input" class="file-input" accept="image/*"></label>
                     <button class="btn-main" onclick="addExpense()">등록</button>
                 </div>
                 <ul class="expense-list" id="expense-list"></ul>
@@ -394,10 +408,10 @@
                     <select id="wish-cat-select"></select>
                     <input type="text" id="wish-title" placeholder="품목명">
                     <input type="text" id="wish-cost" placeholder="예상 가격">
-                    <label class="file-label" style="flex:none;">📷 사진 첨부<input type="file" id="wish-img-input" class="file-input" accept="image/*"></label>
+                    <label class="file-label">📷 사진 첨부<input type="file" id="wish-img-input" class="file-input" accept="image/*"></label>
                 </div>
                 <div class="input-row">
-                    <input type="text" id="wish-url" placeholder="구매 웹 주소 링크 (선택)">
+                    <input type="text" id="wish-url" placeholder="구매 웹 링크 (선택)">
                     <input type="text" id="wish-memo" placeholder="메모 사항">
                     <button class="btn-main" onclick="addWishItem()">추가</button>
                 </div>
@@ -407,7 +421,7 @@
 
         <div id="page-pack-page" class="page-content">
             <div class="section">
-                <h2>🧳 체크리스트 (준비물 목록)</h2>
+                <h2>🧳 체크리스트 (준비물)</h2>
                 <div class="category-tabs" id="pack-tabs-container">
                     <button class="tab-btn active" onclick="switchPackTab('all', this)">전체</button>
                     <button class="tab-btn" onclick="switchPackTab('essential', this)">필수</button>
@@ -441,11 +455,8 @@
                     <input type="text" id="plan-memo" placeholder="상세 계획 메모">
                 </div>
                 <div class="input-row">
-                    <input type="text" id="plan-map-url" placeholder="지도 웹 주소 또는 참고 URL 링크 주소 입력 (선택)">
-                    <label class="file-label" style="flex:none;">
-                        📷 사진 첨부
-                        <input type="file" id="plan-img-input" class="file-input" accept="image/*">
-                    </label>
+                    <input type="text" id="plan-map-url" placeholder="지도 주소 또는 참고 URL (선택)">
+                    <label class="file-label">📷 사진 첨부<input type="file" id="plan-img-input" class="file-input" accept="image/*"></label>
                     <button class="btn-main" onclick="addTimelineItem()">추가</button>
                 </div>
                 <div class="timeline" id="timeline-container"></div>
@@ -456,25 +467,25 @@
             <div class="section">
                 <h2>📖 여행 사진첩 및 일기</h2>
                 <div class="input-row">
-                    <select id="diary-date-select" style="max-width:200px;"></select>
-                    <label class="file-label" style="flex:1;">📷 다중 사진 여러 장 선택 첨부<input type="file" id="diary-img-input" class="file-input" accept="image/*" multiple></label>
+                    <select id="diary-date-select"></select>
+                    <label class="file-label">📷 사진 여러 장 선택<input type="file" id="diary-img-input" class="file-input" accept="image/*" multiple></label>
                 </div>
                 <div class="input-row">
-                    <textarea id="diary-text-input" placeholder="오늘의 특별한 추억이나 기록을 남겨보세요. (사진은 여러 장을 동시에 선택하여 기록할 수 있습니다)"></textarea>
+                    <textarea id="diary-text-input" placeholder="오늘의 추억이나 기록을 남겨보세요. (사진 다중 선택 가능)"></textarea>
                 </div>
                 <div style="display:flex; justify-content:flex-end;">
-                    <button class="btn-main" onclick="addDiary()" style="min-width:100px; padding:12px 24px;">일기 기록하기</button>
+                    <button class="btn-main" onclick="addDiary()" style="width:100%; max-width:150px;">일기 기록하기</button>
                 </div>
-                <div id="diary-container" style="margin-top:24px;"></div>
+                <div id="diary-container" style="margin-top:16px;"></div>
             </div>
         </div>
 
     </div>
 
-    <div class="modal-overlay" id="photo-modal">
-        <div class="modal-box">
+    <div class="modal-overlay" id="photo-modal" onclick="closePhotoModal()">
+        <div class="modal-box" onclick="event.stopPropagation()">
             <p>📷 업로드 완료!</p>
-            <button class="btn-main" onclick="closePhotoModal()" style="padding:8px 24px; width:100%;">확인</button>
+            <button class="btn-main" onclick="closePhotoModal()" style="width:100%;">확인</button>
         </div>
     </div>
 
@@ -483,8 +494,8 @@
         <img id="img-viewer-src" src="" alt="확대보기">
     </div>
 
-    <div class="cat-add-modal" id="wish-cat-modal">
-        <div class="cat-add-box">
+    <div class="cat-add-modal" id="wish-cat-modal" onclick="closeWishCatModal()">
+        <div class="cat-add-box" onclick="event.stopPropagation()">
             <h3>🏷️ 카테고리 추가</h3>
             <input type="text" id="new-wish-cat-input" placeholder="카테고리 이름 입력">
             <div class="cat-add-actions">
@@ -495,7 +506,6 @@
     </div>
 
     <script>
-        // === 글로벌 상태 관리 및 싱글 페이지 라우팅 ===
         let exchangeRates = { JPY: 9.0, USD: 1370, CNY: 190 };
         let currentExpenseTab = 'all'; 
         let currentPackTab = 'all';
@@ -517,23 +527,32 @@
         function switchPage(pageId, btnElement) {
             document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
             document.querySelectorAll('.page-content').forEach(p => p.classList.remove('active'));
-            
             btnElement.classList.add('active');
             document.getElementById('page-' + pageId).classList.add('active');
+            window.scrollTo(0, 0);
         }
 
+        // 모바일 속도 최적화를 위한 부드러운 이미지 압축
         function compressImageAsync(file) {
             return new Promise((resolve) => {
-                const reader = new FileReader(); reader.readAsDataURL(file);
+                const reader = new FileReader(); 
+                reader.readAsDataURL(file);
                 reader.onload = function (event) {
-                    const img = new Image(); img.src = event.target.result;
+                    const img = new Image(); 
+                    img.src = event.target.result;
                     img.onload = function () {
-                        const canvas = document.createElement('canvas'); const ctx = canvas.getContext('2d');
-                        const maxW = 600; const scale = maxW / img.width;
-                        canvas.width = img.width > maxW ? maxW : img.width; canvas.height = img.width > maxW ? img.height * scale : img.height;
-                        ctx.drawImage(img, 0, 0, canvas.width, canvas.height); resolve(canvas.toDataURL('image/jpeg', 0.7));
+                        const canvas = document.createElement('canvas'); 
+                        const ctx = canvas.getContext('2d');
+                        const maxW = 500; 
+                        const scale = maxW / img.width;
+                        canvas.width = img.width > maxW ? maxW : img.width; 
+                        canvas.height = img.width > maxW ? img.height * scale : img.height;
+                        ctx.drawImage(img, 0, 0, canvas.width, canvas.height); 
+                        resolve(canvas.toDataURL('image/jpeg', 0.65));
                     };
+                    img.onerror = function() { resolve(''); };
                 };
+                reader.onerror = function() { resolve(''); };
             });
         }
 
@@ -563,7 +582,7 @@
             if (!appData.currentViewer) appData.currentViewer = "기본멤버";
         }
 
-        function saveData() { try { localStorage.setItem('travelArchiveData_v7_modern', JSON.stringify(appData)); } catch(e) { alert("데이터 저장 한도를 초과했습니다!"); } }
+        function saveData() { try { localStorage.setItem('travelArchiveData_v7_modern', JSON.stringify(appData)); } catch(e) { alert("저장 용량을 초과했습니다. 필요 없는 사진 일기를 삭제해 주세요!"); } }
         
         function getActive() {
             if(!appData.projects[appData.currentProject]) appData.currentProject = Object.keys(appData.projects)[0];
@@ -584,7 +603,6 @@
             fetchExchangeRates();
         };
 
-        // === 👥 여행 멤버 관리 ===
         function renderMembers() {
             const p = getActive();
             const container = document.getElementById('member-badge-container');
@@ -594,16 +612,16 @@
                 const itemDiv = document.createElement('div');
                 itemDiv.className = 'member-manage-item';
                 itemDiv.innerHTML = `
-                    <div>
-                        <span class="member-name-text" id="member-display-name-${idx}">👤 ${m.name}</span>
-                        <div id="member-edit-input-box-${idx}" style="display:none; gap:6px;">
-                            <input type="text" id="member-edit-field-${idx}" value="${m.name}" style="padding:4px 8px; font-size:13px;">
+                    <div style="flex:1; min-width:0;">
+                        <span class="member-name-text" id="member-display-name-${idx}" style="font-weight:600;">👤 ${m.name}</span>
+                        <div id="member-edit-input-box-${idx}" style="display:none; gap:6px; width:100%;">
+                            <input type="text" id="member-edit-field-${idx}" value="${m.name}" style="padding:4px 8px; font-size:13px; width:100px;">
                             <button class="btn-main" style="padding:4px 10px; font-size:12px;" onclick="confirmEditMemberName(${idx})">저장</button>
                             <button class="btn-sub" style="padding:4px 10px; font-size:12px;" onclick="cancelEditMemberName(${idx})">취소</button>
                         </div>
                     </div>
                     <div class="action-btns" id="member-action-box-${idx}">
-                        <button class="btn-edit" onclick="activateEditMemberMode(${idx})">이름 수정</button>
+                        <button class="btn-edit" onclick="activateEditMemberMode(${idx})">수정</button>
                         <button class="btn-del" onclick="deleteTravelMember('${m.name}')">삭제</button>
                     </div>
                 `;
@@ -631,28 +649,19 @@
             const input = document.getElementById('new-member-name');
             const name = input.value.trim();
             if(!name) return;
-            if(p.members.some(m => m.name === name)) { alert("이미 존재하는 멤버 닉네임입니다."); return; }
+            if(p.members.some(m => m.name === name)) { alert("이미 존재하는 멤버입니다."); return; }
             p.members.push({ name: name, budget: 1000000 });
             input.value = '';
-            saveData();
-            renderMembers();
-            renderBudgetMemberTabs();
-            updateBudget();
+            saveData(); renderMembers(); renderBudgetMemberTabs(); updateBudget();
         }
 
         function deleteTravelMember(name) {
-            if(!confirm(`정말로 [${name}] 멤버를 삭제하시겠습니까?\n삭제 시 해당 멤버와 관련된 가계부 데이터 연동도 해제됩니다.`)) return;
+            if(!confirm(`[${name}] 멤버를 삭제하시겠습니까?`)) return;
             const p = getActive();
             p.members = p.members.filter(m => m.name !== name);
-            if(appData.currentViewer === name) {
-                appData.currentViewer = p.members[0] ? p.members[0].name : "기본멤버";
-            }
+            if(appData.currentViewer === name) p.currentViewer = p.members[0] ? p.members[0].name : "기본멤버";
             if(currentBudgetMember === name) currentBudgetMember = 'all';
-            saveData();
-            renderMembers();
-            renderBudgetMemberTabs();
-            updateBudget();
-            renderExpenseList();
+            saveData(); renderMembers(); renderBudgetMemberTabs(); updateBudget(); renderExpenseList();
         }
 
         function activateEditMemberMode(idx) {
@@ -671,23 +680,13 @@
             const p = getActive();
             const newName = document.getElementById(`member-edit-field-${idx}`).value.trim();
             if(!newName) return;
-            
             const oldName = p.members[idx].name;
-            if (oldName !== newName && p.members.some(m => m.name === newName)) {
-                alert("이미 존재하는 멤버 이름입니다.");
-                return;
-            }
-
+            if (oldName !== newName && p.members.some(m => m.name === newName)) { alert("이미 존재합니다."); return; }
             p.expenses.forEach(e => { if(e.member === oldName) e.member = newName; });
             if(appData.currentViewer === oldName) appData.currentViewer = newName;
             if(currentBudgetMember === oldName) currentBudgetMember = newName;
-
             p.members[idx].name = newName;
-            saveData();
-            renderMembers();
-            renderBudgetMemberTabs();
-            updateBudget();
-            renderExpenseList();
+            saveData(); renderMembers(); renderBudgetMemberTabs(); updateBudget(); renderExpenseList();
         }
 
         function changeAppViewer() {
@@ -695,7 +694,6 @@
             saveData();
         }
 
-        // === 💰 가계부 로직 ===
         function renderBudgetMemberTabs() {
             const p = getActive();
             const container = document.getElementById('budget-member-tabs');
@@ -703,7 +701,7 @@
             
             const allBtn = document.createElement('button');
             allBtn.className = 'tab-btn' + (currentBudgetMember === 'all' ? ' active' : '');
-            allBtn.textContent = '👥 공통/전체 합산';
+            allBtn.textContent = '👥 공통/전체';
             allBtn.onclick = () => { currentBudgetMember = 'all'; renderBudgetMemberTabs(); updateBudget(); renderExpenseList(); };
             container.appendChild(allBtn);
 
@@ -722,21 +720,19 @@
             const ownerTitle = document.getElementById('budget-owner-title');
 
             if (currentBudgetMember === 'all') {
-                ownerTitle.innerText = "통합 총 예산 (모든 멤버 합산)";
+                ownerTitle.innerText = "통합 총 예산 (합산)";
                 let totalSum = p.members.reduce((acc, m) => acc + (m.budget || 0), 0);
                 inputEl.value = totalSum;
                 inputEl.disabled = true; 
-
                 let spentSum = p.expenses.reduce((s, item) => s + item.costInKrw, 0);
                 document.getElementById('used-amount').innerText = spentSum.toLocaleString() + ' 원';
                 document.getElementById('remaining-amount').innerText = (totalSum - spentSum).toLocaleString() + ' 원';
             } else {
                 let member = p.members.find(m => m.name === currentBudgetMember);
                 if(!member) return;
-                ownerTitle.innerText = `[${member.name}] 님의 개인 예산 설정 (KRW)`;
+                ownerTitle.innerText = `[${member.name}] 예산 설정`;
                 inputEl.value = member.budget || 0;
                 inputEl.disabled = false;
-
                 let spentSum = p.expenses.filter(item => item.member === currentBudgetMember).reduce((s, item) => s + item.costInKrw, 0);
                 document.getElementById('used-amount').innerText = spentSum.toLocaleString() + ' 원';
                 document.getElementById('remaining-amount').innerText = ((member.budget || 0) - spentSum).toLocaleString() + ' 원';
@@ -744,17 +740,13 @@
             saveData();
         }
 
-        function onBudgetChangeDirectly() {
+        document.getElementById('total-budget').oninput = function() {
             const p = getActive();
             if(currentBudgetMember !== 'all') {
                 let member = p.members.find(m => m.name === currentBudgetMember);
-                if(member) {
-                    member.budget = parseFloat(document.getElementById('total-budget').value) || 0;
-                    updateBudget();
-                }
+                if(member) { member.budget = parseFloat(this.value) || 0; updateBudget(); }
             }
-        }
-        document.getElementById('total-budget').oninput = onBudgetChangeDirectly;
+        };
 
         async function addExpense() {
             const p = getActive();
@@ -775,17 +767,14 @@
                 document.getElementById('expense-title').value = '';
                 document.getElementById('expense-cost').value = '';
                 imgInput.value = '';
-                updateBudget();
-                renderExpenseList();
+                updateBudget(); renderExpenseList();
                 if(imgData) openPhotoModal();
             };
 
             if(imgInput.files && imgInput.files[0]) {
                 let base64 = await compressImageAsync(imgInput.files[0]);
                 saveObj(base64);
-            } else {
-                saveObj('');
-            }
+            } else { saveObj(''); }
         }
 
         function renderExpenseList() {
@@ -800,7 +789,7 @@
             });
 
             if(filtered.length === 0) {
-                listEl.innerHTML = '<p style="font-size:13px; color:var(--gray-muted); text-align:center; padding:20px;">등록된 지출 내역이 없습니다.</p>';
+                listEl.innerHTML = '<p style="font-size:13px; color:var(--gray-muted); text-align:center; padding:16px;">내역이 없습니다.</p>';
                 return;
             }
 
@@ -825,14 +814,11 @@
         }
 
         function deleteExpense(id) {
-            const p = getActive();
-            p.expenses = p.expenses.filter(e => e.id !== id);
-            saveData();
-            updateBudget();
-            renderExpenseList();
+            const p = getActive(); p.expenses = p.expenses.filter(e => e.id !== id);
+            saveData(); updateBudget(); renderExpenseList();
         }
 
-        // === 🛍️ 위시리스트 로직 (수정 및 사진 첨부 지원 전면 적용) ===
+        // === 🛍️ 위시리스트 로직 ===
         function renderWishCategoryTabs() {
             const container = document.getElementById('wish-tabs-container');
             container.innerHTML = '';
@@ -852,9 +838,7 @@
             });
 
             const addBtn = document.createElement('button');
-            addBtn.className = 'tab-btn';
-            addBtn.style.borderStyle = 'dashed';
-            addBtn.textContent = '+ 카테고리 추가';
+            addBtn.className = 'tab-btn'; addBtn.style.borderStyle = 'dashed'; addBtn.textContent = '+ 카테고리 추가';
             addBtn.onclick = () => { document.getElementById('wish-cat-modal').style.display = 'flex'; };
             container.appendChild(addBtn);
         }
@@ -873,23 +857,17 @@
             const key = 'cat_' + Date.now();
             appData.wishCategories.push({ key, label, color: randomColor() });
             document.getElementById('new-wish-cat-input').value = '';
-            closeWishCatModal();
-            saveData();
-            renderWishCategoryTabs();
-            renderWishCatSelect();
+            closeWishCatModal(); saveData(); renderWishCategoryTabs(); renderWishCatSelect();
         }
 
         function closeWishCatModal() { document.getElementById('wish-cat-modal').style.display = 'none'; }
 
         function deleteWishCat(key, e) {
             e.stopPropagation();
-            if(!confirm("이 카테고리를 삭제할까요? 포함된 아이템들의 분류가 초기화됩니다.")) return;
+            if(!confirm("이 카테고리를 삭제할까요?")) return;
             appData.wishCategories = appData.wishCategories.filter(c => c.key !== key);
             if(currentWishTab === key) currentWishTab = 'all';
-            saveData();
-            renderWishCategoryTabs();
-            renderWishCatSelect();
-            renderWishList();
+            saveData(); renderWishCategoryTabs(); renderWishCatSelect(); renderWishList();
         }
 
         async function addWishItem() {
@@ -910,17 +888,14 @@
                 document.getElementById('wish-url').value = '';
                 document.getElementById('wish-memo').value = '';
                 imgInput.value = '';
-                saveData();
-                renderWishList();
+                saveData(); renderWishList();
                 if(imgData) openPhotoModal();
             };
 
             if(imgInput.files && imgInput.files[0]) {
                 let base64 = await compressImageAsync(imgInput.files[0]);
-                saveWish(b64);
-            } else {
-                saveWish('');
-            }
+                saveWish(base64); // b64 에러 원인 수정 완료
+            } else { saveWish(''); }
         }
 
         function renderWishList() {
@@ -931,7 +906,7 @@
             let filtered = p.wishItems.filter(item => currentWishTab === 'all' || item.cat === currentWishTab);
 
             if(filtered.length === 0) {
-                listEl.innerHTML = '<p style="font-size:13px; color:var(--gray-muted); text-align:center; padding:20px;">품목이 없습니다.</p>';
+                listEl.innerHTML = '<p style="font-size:13px; color:var(--gray-muted); text-align:center; padding:16px;">비어있습니다.</p>';
                 return;
             }
 
@@ -942,40 +917,39 @@
                 li.style.alignItems = 'stretch';
                 
                 let catObj = appData.wishCategories.find(c => c.key === item.cat) || { label: '기타', color: '#64748b' };
-                let linkButton = item.url ? `<a href="${item.url}" target="_blank" class="link-url">🔗 링크 이동</a>` : '';
-                let imgBox = item.img ? `<img src="${item.img}" class="attached-img" onclick="openImgViewer('${item.img}')" style="width:55px; height:55px;">` : '';
+                let linkButton = item.url ? `<a href="${item.url}" target="_blank" class="link-url">🔗 링크</a>` : '';
+                let imgBox = item.img ? `<img src="${item.img}" class="attached-img" onclick="openImgViewer('${item.img}')" style="width:50px; height:50px;">` : '';
                 
                 li.innerHTML = `
-                    <div style="display:flex; justify-content:between; width:100%; align-items:center;" id="wish-view-box-${item.id}">
+                    <div style="display:flex; justify-content:space-between; width:100%; align-items:center;" id="wish-view-box-${item.id}">
                         <div class="expense-left">
                             ${imgBox}
                             <div class="expense-info">
                                 <span class="wish-badge" style="background:${catObj.color}">${catObj.label}</span>
                                 <span style="font-weight:700; ${item.done ? 'text-decoration:line-through; color:var(--gray-muted);':''}">${item.title}</span>
-                                <span class="currency-detail">예상가: ${item.cost || '미정'} | 메모: ${item.memo || '-'}</span>
+                                <span class="currency-detail">금액: ${item.cost || '-'} | ${item.memo || '메모없음'}</span>
                                 ${linkButton}
                             </div>
                         </div>
                         <div class="action-btns">
-                            <button class="btn-sub" style="font-size:12px; padding:4px 8px;" onclick="activateWishEditMode(${item.id})">수정</button>
-                            <button class="btn-edit" style="font-size:12px; padding:4px 8px;" onclick="toggleWishDone(${item.id})">${item.done ? '취소' : '완료'}</button>
-                            <button class="btn-del" style="font-size:12px; padding:4px 8px;" onclick="deleteWishItem(${item.id})">삭제</button>
+                            <button class="btn-sub" onclick="activateWishEditMode(${item.id})">수정</button>
+                            <button class="btn-edit" onclick="toggleWishDone(${item.id})">${item.done ? '취소' : '완료'}</button>
+                            <button class="btn-del" onclick="deleteWishItem(${item.id})">삭제</button>
                         </div>
                     </div>
                     <div class="edit-mode-box" id="wish-edit-box-${item.id}" style="display:none;">
-                        <input type="text" id="wish-edit-title-${item.id}" value="${item.title}" placeholder="품목명">
-                        <input type="text" id="wish-edit-cost-${item.id}" value="${item.cost}" placeholder="예상 가격">
+                        <input type="text" id="wish-edit-title-${item.id}" value="${item.title}">
+                        <input type="text" id="wish-edit-cost-${item.id}" value="${item.cost}">
                         <input type="text" id="wish-edit-url-${item.id}" value="${item.url || ''}" placeholder="링크 URL">
                         <input type="text" id="wish-edit-memo-${item.id}" value="${item.memo || ''}" placeholder="메모">
-                        <div style="display:flex; gap:10px; align-items:center; margin-top:4px;">
-                            <label class="file-label" style="font-size:12px; padding:6px 10px;">📷 이미지 교체
+                        <div style="margin: 4px 0;">
+                            <label class="file-label" style="font-size:12px; padding:6px;">📷 사진 수정/교체
                                 <input type="file" id="wish-edit-img-${item.id}" class="file-input" accept="image/*">
                             </label>
-                            <span style="font-size:11px; color:var(--gray-muted);">새로 지정안하면 기존 사진 유지</span>
                         </div>
-                        <div style="display:flex; gap:6px; justify-content:flex-end; margin-top:8px;">
-                            <button class="btn-main" style="padding:6px 14px; font-size:13px;" onclick="confirmWishEdit(${item.id})">변경 저장</button>
-                            <button class="btn-sub" style="padding:6px 14px; font-size:13px;" onclick="cancelWishEdit(${item.id})">취소</button>
+                        <div style="display:flex; gap:6px; justify-content:flex-end;">
+                            <button class="btn-main" onclick="confirmWishEdit(${item.id})">저장</button>
+                            <button class="btn-sub" onclick="cancelWishEdit(${item.id})">취소</button>
                         </div>
                     </div>
                 `;
@@ -987,44 +961,29 @@
             document.getElementById(`wish-view-box-${id}`).style.display = 'none';
             document.getElementById(`wish-edit-box-${id}`).style.display = 'flex';
         }
-
         function cancelWishEdit(id) {
             document.getElementById(`wish-view-box-${id}`).style.display = 'flex';
             document.getElementById(`wish-edit-box-${id}`).style.display = 'none';
         }
-
         async function confirmWishEdit(id) {
-            const p = getActive();
-            let item = p.wishItems.find(w => w.id === id);
-            if(!item) return;
-
-            const newTitle = document.getElementById(`wish-edit-title-${id}`).value.trim();
-            if(!newTitle) return;
+            const p = getActive(); let item = p.wishItems.find(w => w.id === id); if(!item) return;
+            const newTitle = document.getElementById(`wish-edit-title-${id}`).value.trim(); if(!newTitle) return;
 
             item.title = newTitle;
             item.cost = document.getElementById(`wish-edit-cost-${id}`).value.trim();
             item.url = document.getElementById(`wish-edit-url-${id}`).value.trim();
             item.memo = document.getElementById(`wish-edit-memo-${id}`).value.trim();
-
             const imgFile = document.getElementById(`wish-edit-img-${id}`).files[0];
-            if(imgFile) {
-                item.img = await compressImageAsync(imgFile);
-            }
-
-            saveData();
-            renderWishList();
-        }
-
-        function toggleWishDone(id) {
-            const p = getActive();
-            let item = p.wishItems.find(w => w.id === id);
-            if(item) item.done = !item.done;
+            if(imgFile) item.img = await compressImageAsync(imgFile);
             saveData(); renderWishList();
         }
 
+        function toggleWishDone(id) {
+            const p = getActive(); let item = p.wishItems.find(w => w.id === id); if(item) item.done = !item.done;
+            saveData(); renderWishList();
+        }
         function deleteWishItem(id) {
-            const p = getActive();
-            p.wishItems = p.wishItems.filter(w => w.id !== id);
+            const p = getActive(); p.wishItems = p.wishItems.filter(w => w.id !== id);
             saveData(); renderWishList();
         }
 
@@ -1037,30 +996,21 @@
         function addTodo() {
             const p = getActive();
             const cat = document.getElementById('pack-cat-select').value;
-            const text = document.getElementById('todo-input').value.trim();
-            if(!text) return;
-
+            const text = document.getElementById('todo-input').value.trim(); if(!text) return;
             p.packItems.push({ id: Date.now(), cat, text, done: false });
             document.getElementById('todo-input').value = '';
-            saveData();
-            renderPack();
+            saveData(); renderPack();
         }
 
         function renderPack() {
-            const p = getActive();
-            const container = document.getElementById('pack-container');
-            container.innerHTML = '';
-
+            const p = getActive(); const container = document.getElementById('pack-container'); container.innerHTML = '';
             let filtered = p.packItems.filter(item => currentPackTab === 'all' || item.cat === currentPackTab);
-
             if(filtered.length === 0) {
-                container.innerHTML = '<p style="font-size:13px; color:var(--gray-muted); text-align:center; padding:20px;">체크리스트가 비어있습니다.</p>';
+                container.innerHTML = '<p style="font-size:13px; color:var(--gray-muted); text-align:center; padding:16px;">목록이 비어있습니다.</p>';
                 return;
             }
-
             filtered.forEach(item => {
-                const div = document.createElement('div');
-                div.className = 'check-item';
+                const div = document.createElement('div'); div.className = 'check-item';
                 div.innerHTML = `
                     <label class="check-label ${item.done ? 'done' : ''}">
                         <input type="checkbox" ${item.done ? 'checked' : ''} onchange="toggleTodo(${item.id})">
@@ -1071,45 +1021,31 @@
                 container.appendChild(div);
             });
         }
-
         function toggleTodo(id) {
-            const p = getActive();
-            let item = p.packItems.find(t => t.id === id);
-            if(item) item.done = !item.done;
+            const p = getActive(); let item = p.packItems.find(t => t.id === id); if(item) item.done = !item.done;
             saveData(); renderPack();
         }
-
         function deleteTodo(id) {
-            const p = getActive();
-            p.packItems = p.packItems.filter(t => t.id !== id);
+            const p = getActive(); p.packItems = p.packItems.filter(t => t.id !== id);
             saveData(); renderPack();
         }
 
-        // === 📍 일정 플래너 로직 (수정 모드 및 사진 변경 완전 결합) ===
+        // === 📍 일정 플래너 로직 ===
         function renderDayTabs() {
-            const p = getActive();
-            const nav = document.getElementById('day-tabs-nav');
-            nav.innerHTML = '';
-            
+            const p = getActive(); const nav = document.getElementById('day-tabs-nav'); nav.innerHTML = '';
             const allBtn = document.createElement('button');
-            allBtn.className = 'tab-btn' + (currentDayTab === 'all' ? ' active' : '');
-            allBtn.textContent = '📍 전체 루트';
+            allBtn.className = 'tab-btn' + (currentDayTab === 'all' ? ' active' : ''); allBtn.textContent = '📍 전체 루트';
             allBtn.onclick = () => { currentDayTab = 'all'; renderDayTabs(); renderTimeline(); };
             nav.appendChild(allBtn);
 
             for(let i=1; i<=p.daysCount; i++) {
                 const btn = document.createElement('button');
-                btn.className = 'tab-btn' + (currentDayTab === 'day'+i ? ' active' : '');
-                btn.textContent = `Day ${i}`;
+                btn.className = 'tab-btn' + (currentDayTab === 'day'+i ? ' active' : ''); btn.textContent = `Day ${i}`;
                 btn.onclick = () => { currentDayTab = 'day'+i; renderDayTabs(); renderTimeline(); };
                 nav.appendChild(btn);
             }
-
-            const select = document.getElementById('plan-day-select');
-            select.innerHTML = '';
-            for(let i=1; i<=p.daysCount; i++) {
-                select.innerHTML += `<option value="day${i}">Day ${i}</option>`;
-            }
+            const select = document.getElementById('plan-day-select'); select.innerHTML = '';
+            for(let i=1; i<=p.daysCount; i++) { select.innerHTML += `<option value="day${i}">Day ${i}</option>`; }
         }
 
         async function addTimelineItem() {
@@ -1135,70 +1071,273 @@
             };
 
             if(imgInput.files && imgInput.files[0]) {
-                let b64 = await compressImageAsync(imgInput.files[0]);
-                savePlan(b64);
-            } else {
-                savePlan('');
-            }
+                let b64 = await compressImageAsync(imgInput.files[0]); savePlan(b64);
+            } else { savePlan(''); }
         }
 
         function renderTimeline() {
-            const p = getActive();
-            const container = document.getElementById('timeline-container');
-            container.innerHTML = '';
-
+            const p = getActive(); const container = document.getElementById('timeline-container'); container.innerHTML = '';
             let daysToRender = currentDayTab === 'all' ? Object.keys(p.targetSchedule) : [currentDayTab];
             let hasData = false;
 
             daysToRender.sort().forEach(dayKey => {
-                let items = p.targetSchedule[dayKey] || [];
-                if(items.length === 0) return;
+                let items = p.targetSchedule[dayKey] || []; if(items.length === 0) return;
                 hasData = true;
-
                 items.sort((a,b) => (a.time || '99:99').localeCompare(b.time || '99:99'));
 
                 items.forEach(item => {
                     const div = document.createElement('div');
-                    div.className = 'timeline-item';
-                    div.style.flexDirection = 'column';
-                    div.style.alignItems = 'stretch';
-                    
+                    div.className = 'timeline-item'; div.style.flexDirection = 'column'; div.style.alignItems = 'stretch';
                     let dayNum = dayKey.replace('day','');
                     let imgTag = item.img ? `<br><img src="${item.img}" class="timeline-img" onclick="openImgViewer('${item.img}')">` : '';
-                    let linkButton = item.mapUrl ? `<a href="${item.mapUrl}" target="_blank" class="btn-sub" style="display:inline-block; margin-top:6px; font-size:11px; padding:4px 8px; text-decoration:none;">🔗 참고 링크</a>` : '';
+                    let linkButton = item.mapUrl ? `<a href="${item.mapUrl}" target="_blank" class="btn-sub" style="display:inline-block; margin-top:4px; font-size:11px; padding:4px 6px; text-decoration:none;">🔗 링크</a>` : '';
 
                     div.innerHTML = `
                         <div style="display:flex; justify-content:space-between; align-items:flex-start; width:100%;" id="plan-view-box-${item.id}">
                             <div>
                                 ${currentDayTab === 'all' ? `<span class="day-badge">Day ${dayNum}</span> ` : ''}
-                                <span class="time">⏰ ${item.time || '시간 미정'}</span>
+                                <span class="time">⏰ ${item.time || '미정'}</span>
                                 <div class="location">${item.location}</div>
                                 <div class="memo">${item.memo || ''}</div>
-                                ${linkButton}
-                                ${imgTag}
+                                ${linkButton} ${imgTag}
                             </div>
                             <div class="action-btns">
-                                <button class="btn-edit" style="font-size:12px; padding:4px 8px;" onclick="activatePlanEditMode('${dayKey}', ${item.id})">수정</button>
-                                <button class="btn-del" style="font-size:12px; padding:4px 8px;" onclick="deleteTimelineItem('${dayKey}', ${item.id})">삭제</button>
+                                <button class="btn-edit" onclick="activatePlanEditMode('${dayKey}', ${item.id})">수정</button>
+                                <button class="btn-del" onclick="deleteTimelineItem('${dayKey}', ${item.id})">삭제</button>
                             </div>
                         </div>
-                        
                         <div class="edit-mode-box" id="plan-edit-box-${item.id}" style="display:none;">
-                            <span style="font-size:12px; font-weight:700; color:var(--primary-color);">일정 편집 모드</span>
-                            <div style="display:flex; gap:8px;">
-                                <input type="time" id="plan-edit-time-${item.id}" value="${item.time || ''}" style="max-width:120px;">
-                                <input type="text" id="plan-edit-location-${item.id}" value="${item.location}" placeholder="장소명">
+                            <div style="display:flex; gap:6px;">
+                                <input type="time" id="plan-edit-time-${item.id}" value="${item.time || ''}" style="width:110px;">
+                                <input type="text" id="plan-edit-location-${item.id}" value="${item.location}">
                             </div>
-                            <input type="text" id="plan-edit-memo-${item.id}" value="${item.memo || ''}" placeholder="메모">
-                            <input type="text" id="plan-edit-map-${item.id}" value="${item.mapUrl || ''}" placeholder="지도/참고 웹 주소">
-                            
-                            <div style="display:flex; gap:10px; align-items:center; margin-top:4px;">
-                                <label class="file-label" style="font-size:12px; padding:6px 10px;">📷 일정 이미지 교체/추가
+                            <input type="text" id="plan-edit-memo-${item.id}" value="${item.memo || ''}">
+                            <input type="text" id="plan-edit-map-${item.id}" value="${item.mapUrl || ''}">
+                            <div style="margin: 4px 0;">
+                                <label class="file-label" style="font-size:12px; padding:6px;">📷 이미지 수정
                                     <input type="file" id="plan-edit-img-${item.id}" class="file-input" accept="image/*">
                                 </label>
-                                <span style="font-size:11px; color:var(--gray-muted);">새 파일 선택 시 기존 사진 대체됨</span>
                             </div>
+                            <div style="display:flex; gap:6px; justify-content:flex-end;">
+                                <button class="btn-main" onclick="confirmPlanEdit('${dayKey}', ${item.id})">저장</button>
+                                <button class="btn-sub" onclick="cancelPlanEdit(${item.id})">취소</button>
+                            </div>
+                        </div>
+                    `;
+                    container.appendChild(div);
+                });
+            });
+            if(!hasData) container.innerHTML = '<p style="font-size:13px; color:var(--gray-muted); text-align:center; padding:16px;">일정이 없습니다.</p>';
+        }
 
-                            <div style="display:flex; gap:6px; justify-content:flex-end; margin-top:8px;">
-                                <button class="btn-main" style="padding:6px 14px; font-size:13px;" onclick="confirmPlanEdit('${dayKey}', ${item.id})">일정 저장</button>
-                                <button class="btn-sub" style="padding:6px 14px; font-size:13
+        function activatePlanEditMode(dayKey, id) {
+            document.getElementById(`plan-view-box-${id}`).style.display = 'none';
+            document.getElementById(`plan-edit-box-${id}`).style.display = 'flex';
+        }
+        function cancelPlanEdit(id) {
+            document.getElementById(`plan-view-box-${id}`).style.display = 'flex';
+            document.getElementById(`plan-edit-box-${id}`).style.display = 'none';
+        }
+        async function confirmPlanEdit(dayKey, id) {
+            const p = getActive(); let items = p.targetSchedule[dayKey] || []; let item = items.find(i => i.id === id); if(!item) return;
+            const loc = document.getElementById(`plan-edit-location-${id}`).value.trim(); if(!loc) return;
+
+            item.location = loc;
+            item.time = document.getElementById(`plan-edit-time-${id}`).value;
+            item.memo = document.getElementById(`plan-edit-memo-${id}`).value.trim();
+            item.mapUrl = document.getElementById(`plan-edit-map-${id}`).value.trim();
+            const imgFile = document.getElementById(`plan-edit-img-${id}`).files[0];
+            if(imgFile) item.img = await compressImageAsync(imgFile);
+            saveData(); renderTimeline();
+        }
+        function deleteTimelineItem(dayKey, id) {
+            const p = getActive(); if(p.targetSchedule[dayKey]) { p.targetSchedule[dayKey] = p.targetSchedule[dayKey].filter(item => item.id !== id); saveData(); renderTimeline(); }
+        }
+
+        // === 📖 여행 일기 로직 ===
+        function addDiary() {
+            const p = getActive();
+            const date = document.getElementById('diary-date-select').value;
+            const text = document.getElementById('diary-text-input').value.trim();
+            const files = document.getElementById('diary-img-input').files;
+
+            if(!text && files.length === 0) return;
+
+            let compressPromises = [];
+            for(let i=0; i<files.length; i++) { compressPromises.push(compressImageAsync(files[i])); }
+
+            Promise.all(compressPromises).then(imgBase64Array => {
+                p.diaries.push({ id: Date.now(), date, text, imgs: imgBase64Array }); 
+                document.getElementById('diary-text-input').value = '';
+                document.getElementById('diary-img-input').value = '';
+                saveData(); renderDiaries();
+                if(imgBase64Array.length > 0) openPhotoModal();
+            });
+        }
+
+        function renderDiaries() {
+            const p = getActive(); const container = document.getElementById('diary-container'); container.innerHTML = '';
+            if(p.diaries.length === 0) {
+                container.innerHTML = '<p style="font-size:13px; color:var(--gray-muted); text-align:center; padding:16px;">일기가 없습니다.</p>'; return;
+            }
+            p.diaries.sort((a,b) => b.date.localeCompare(a.date) || b.id - a.id).forEach(item => {
+                const div = document.createElement('div'); div.className = 'diary-card';
+                let imagesLayout = '';
+                if(item.imgs && item.imgs.length > 0) {
+                    imagesLayout += `<div class="diary-img-container">`;
+                    item.imgs.forEach(imgBase64 => { imagesLayout += `<img src="${imgBase64}" class="diary-img" onclick="openImgViewer('${imgBase64}')">`; });
+                    imagesLayout += `</div>`;
+                }
+                div.innerHTML = `
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                        <span class="diary-date">📅 ${item.date}</span>
+                        <button class="btn-del" style="padding:4px 8px; font-size:11px;" onclick="deleteDiary(${item.id})">삭제</button>
+                    </div>
+                    ${imagesLayout}
+                    <div class="diary-text">${item.text || ''}</div>
+                `;
+                container.appendChild(div);
+            });
+        }
+        function deleteDiary(id) {
+            const p = getActive(); p.diaries = p.diaries.filter(d => d.id !== id); saveData(); renderDiaries();
+        }
+
+        function refreshDateSelectors() {
+            const p = getActive(); const start = new Date(p.startDate); const end = new Date(p.endDate);
+            let list = [];
+            if(!isNaN(start) && !isNaN(end) && start <= end) {
+                let curr = new Date(start);
+                while(curr <= end) { list.push(curr.toISOString().split('T')[0]); curr.setDate(curr.getDate() + 1); }
+            } else { list.push(new Date().toISOString().split('T')[0]); }
+
+            const expSel = document.getElementById('expense-date-select');
+            const diarySel = document.getElementById('diary-date-select');
+            expSel.innerHTML = ''; diarySel.innerHTML = '';
+            list.forEach(d => {
+                expSel.innerHTML += `<option value="${d}">${d}</option>`;
+                diarySel.innerHTML += `<option value="${d}">${d}</option>`;
+            });
+        }
+
+        function updateTravelPeriod() {
+            const p = getActive();
+            p.startDate = document.getElementById('travel-start-date').value;
+            p.endDate = document.getElementById('travel-end-date').value;
+            const start = new Date(p.startDate); const end = new Date(p.endDate);
+            if(!isNaN(start) && !isNaN(end) && start <= end) {
+                p.daysCount = Math.ceil((end - start) / (1000 * 60 * 60 * 24)) + 1;
+            } else { p.daysCount = 1; }
+
+            for(let i=1; i<=p.daysCount; i++) { if(!p.targetSchedule['day'+i]) p.targetSchedule['day'+i] = []; }
+            saveData(); refreshDateSelectors(); renderDayTabs(); renderTimeline(); updateDurationText();
+        }
+
+        function updateDurationText() {
+            const p = getActive();
+            document.getElementById('duration-text').innerText = `✈️ 일정 : ${p.startDate} ~ ${p.endDate} (${p.daysCount}일간)`;
+        }
+
+        function initProjectDropdown() {
+            const picker = document.getElementById('travel-picker'); picker.innerHTML = '';
+            Object.keys(appData.projects).forEach(key => {
+                const opt = document.createElement('option'); opt.value = key; opt.textContent = key;
+                if(appData.currentProject === key) opt.selected = true;
+                picker.appendChild(opt);
+            });
+        }
+
+        function createNewTravel() {
+            const name = document.getElementById('new-travel-name').value.trim(); if(!name) return;
+            if(appData.projects[name]) { alert("이미 존재합니다."); return; }
+            const today = new Date().toISOString().split('T')[0];
+            appData.projects[name] = {
+                members: [{ name: "기본멤버", budget: 1000000 }],
+                startDate: today, endDate: today, expenses: [], wishItems: [], packItems: [], daysCount: 1,
+                targetSchedule: { day1:[] }, diaries: []
+            };
+            appData.currentProject = name; document.getElementById('new-travel-name').value = '';
+            saveData(); initProjectDropdown(); loadProjectAll();
+        }
+
+        function changeTravel() { appData.currentProject = document.getElementById('travel-picker').value; saveData(); loadProjectAll(); }
+        
+        function deleteTravelProject() {
+            if(Object.keys(appData.projects).length <= 1) { alert("최소 한 개의 폴더는 있어야 합니다."); return; }
+            if(confirm(`[${appData.currentProject}] 폴더를 삭제할까요?`)) { 
+                delete appData.projects[appData.currentProject]; appData.currentProject = Object.keys(appData.projects)[0]; 
+                saveData(); initProjectDropdown(); loadProjectAll(); 
+            }
+        }
+
+        function loadProjectAll() {
+            const p = getActive();
+            document.getElementById('travel-start-date').value = p.startDate; 
+            document.getElementById('travel-end-date').value = p.endDate;
+            updateDurationText(); refreshDateSelectors(); renderMembers(); renderWishCategoryTabs(); renderWishCatSelect(); renderDayTabs(); renderBudgetMemberTabs(); updateBudget(); renderExpenseList(); renderWishList(); renderPack(); renderTimeline(); renderDiaries(); fetchWeather();
+        }
+
+        function switchExpenseTab(target, btnElement) {
+            document.querySelectorAll('#expense-tabs-container .tab-btn').forEach(b => b.classList.remove('active'));
+            btnElement.classList.add('active'); currentExpenseTab = target; renderExpenseList();
+        }
+
+        function openPhotoModal() { document.getElementById('photo-modal').style.display = 'flex'; }
+        function closePhotoModal() { document.getElementById('photo-modal').style.display = 'none'; }
+        function openImgViewer(src) { document.getElementById('img-viewer-src').src = src; document.getElementById('img-viewer').style.display = 'flex'; }
+        function closeImgViewer() { document.getElementById('img-viewer').style.display = 'none'; }
+
+        function exportDataBackup() {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(appData));
+            const dlAnchor = document.createElement('a'); dlAnchor.setAttribute("href", dataStr);
+            dlAnchor.setAttribute("download", `travel_backup.json`);
+            document.body.appendChild(dlAnchor); dlAnchor.click(); dlAnchor.remove();
+        }
+
+        function importDataBackup(input) {
+            if (!input.files || !input.files[0]) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const imported = JSON.parse(e.target.result);
+                    if(imported.projects) { appData = imported; saveData(); alert("복구 성공!"); loadProjectAll(); initProjectDropdown(); }
+                } catch(err) { alert("올바른 파일이 아닙니다."); }
+            };
+            reader.readAsText(input.files[0]);
+        }
+
+        function forceResetApp() {
+            if(confirm("모든 데이터를 초기화할까요?")) { localStorage.removeItem('travelArchiveData_v7_modern'); appData = null; initStorage(); initProjectDropdown(); loadProjectAll(); }
+        }
+
+        function fetchWeather() {
+            const city = document.getElementById('weather-city-select').value;
+            const container = document.getElementById('weather-body-content');
+            const fakeData = {
+                Tokyo: { temp: '21°C', text: '🌤️ 대체로 맑음 | 습도 45%\n도쿄 중심부' },
+                Osaka: { temp: '23°C', text: '☀️ 맑음 | 습도 40%\n오사카성 인근' },
+                Fukuoka: { temp: '19°C', text: '☁️ 흐림 | 습도 65%\n하카타역 인근' },
+                Nagoya: { temp: '22°C', text: '☀️ 아주 맑음 | 습도 38%\n나고야 시내' },
+                Sapporo: { temp: '11°C', text: '🌧️ 가벼운 비 | 습도 80%\n삿포로 오도리' },
+                Seoul: { temp: '18°C', text: '🌤️ 구름 조금 | 습도 50%\n서울 광화문' }
+            };
+            if (fakeData[city]) { container.innerHTML = `<div class="weather-temp">${fakeData[city].temp}</div><div class="weather-info">${fakeData[city].text.replace('\n', '<br>')}</div>`; }
+        }
+        
+        async function fetchExchangeRates() {
+            try {
+                const res = await fetch('https://open.er-api.com/v6/latest/KRW');
+                if(res.ok) {
+                    const data = await res.json();
+                    if(data && data.rates) {
+                        exchangeRates.USD = Math.round(1 / data.rates.USD);
+                        exchangeRates.JPY = Math.round((1 / data.rates.JPY) * 100 * 10) / 10;
+                        exchangeRates.CNY = Math.round(1 / data.rates.CNY);
+                        updateBudget();
+                    }
+                }
+            } catch(e) {}
+        }
+    </script>
+</body>
+</html>
