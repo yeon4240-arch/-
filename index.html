@@ -186,7 +186,7 @@
         .wish-badge { font-size: 11px; padding: 2px 8px; border-radius: 4px; font-weight: bold; width: max-content; margin-bottom: 4px; color: white; }
         .link-url { font-size: 13px; color: var(--primary-color); text-decoration: none; display: inline-flex; align-items: center; gap: 4px; margin-top: 4px; font-weight: 500; }
         .link-url:hover { text-decoration: underline; }
-        .edit-mode-box { display: flex; flex-direction: column; gap: 8px; background: #f8fafc; padding: 12px; border-radius: 6px; width: 100%; margin: 8px 0; border: 1px solid var(--border-color); }
+        .edit-mode-box { display: flex; flex-direction: column; gap: 8px; background: #f8fafc; padding: 14px; border-radius: 8px; width: 100%; margin: 8px 0; border: 1px solid var(--border-color); }
 
         .check-item { display: flex; align-items: center; justify-content: space-between; padding: 12px 4px; border-bottom: 1px solid var(--border-color); }
         .check-label { display: flex; align-items: center; gap: 12px; cursor: pointer; flex: 1; font-size: 14px; }
@@ -207,13 +207,11 @@
         .diary-card:last-child { border-bottom: none; }
         .diary-date { font-size: 14px; font-weight: 700; color: var(--primary-color); margin-bottom: 8px; }
         
-        /* 다이어리 다중 이미지 컨테이너 개편 */
         .diary-img-container { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
         .diary-img { width: calc(25% - 6px); min-width: 80px; height: 100px; object-fit: cover; border-radius: 6px; border: 1px solid var(--border-color); cursor: pointer; transition: transform 0.2s; }
         .diary-img:hover { transform: scale(1.03); }
         .diary-text { font-size: 14px; line-height: 1.6; color: var(--text-color); background: #f8fafc; padding: 14px; border: 1px solid var(--border-color); border-radius: 8px; white-space: pre-wrap; }
 
-        /* 날씨 위젯 */
         .weather-widget { background: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe; border-radius: 8px; padding: 16px; margin-bottom: 24px; }
         .weather-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; border-bottom: 1px solid #bfdbfe; padding-bottom: 8px; }
         .weather-header select { background: #fff; border: 1px solid #bfdbfe; padding: 6px; font-size: 13px; border-radius: 4px; }
@@ -222,7 +220,6 @@
         .weather-info { text-align: right; font-size: 13px; line-height: 1.4; }
         .duration-display { font-size: 13px; color: var(--primary-color); font-weight: 600; background: #fff; border: 1px solid var(--border-color); padding: 6px 12px; border-radius: 6px; display: inline-block; margin-top: 6px; }
 
-        /* 멤버 관리 목록 디자인 수정 */
         .member-management-list { display: flex; flex-direction: column; gap: 10px; margin-top: 12px; }
         .member-manage-item { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: #f8fafc; border: 1px solid var(--border-color); border-radius: 8px; }
         .member-name-text { font-size: 14px; font-weight: 600; }
@@ -391,12 +388,13 @@
 
         <div id="page-wish-page" class="page-content">
             <div class="section">
-                <h2>🛍️ 쇼핑 위시리스트</h2>
+                <h2>🛍️ 위시리스트</h2>
                 <div class="category-tabs" id="wish-tabs-container"></div>
                 <div class="input-row">
                     <select id="wish-cat-select"></select>
                     <input type="text" id="wish-title" placeholder="품목명">
                     <input type="text" id="wish-cost" placeholder="예상 가격">
+                    <label class="file-label" style="flex:none;">📷 사진 첨부<input type="file" id="wish-img-input" class="file-input" accept="image/*"></label>
                 </div>
                 <div class="input-row">
                     <input type="text" id="wish-url" placeholder="구매 웹 주소 링크 (선택)">
@@ -513,11 +511,9 @@
             { key: 'etc', label: '기타', color: '#64748b' },
         ];
 
-        // 깔끔한 모던 컬러 팔레트
         const COLOR_PALETTE = ['#3b82f6','#ef4444','#f97316','#10b981','#8b5cf6','#ec4899','#64748b'];
         function randomColor() { return COLOR_PALETTE[Math.floor(Math.random() * COLOR_PALETTE.length)]; }
 
-        // 페이지 네비게이션 스위칭 함수
         function switchPage(pageId, btnElement) {
             document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
             document.querySelectorAll('.page-content').forEach(p => p.classList.remove('active'));
@@ -526,7 +522,6 @@
             document.getElementById('page-' + pageId).classList.add('active');
         }
 
-        // 비동기 이미지 압축기 (멀티 이미지 지원을 위해 프로미스 유지)
         function compressImageAsync(file) {
             return new Promise((resolve) => {
                 const reader = new FileReader(); reader.readAsDataURL(file);
@@ -589,7 +584,7 @@
             fetchExchangeRates();
         };
 
-        // === 👥 여행 멤버 삭제(컨펌) 및 수정 기능 구현 개편 ===
+        // === 👥 여행 멤버 관리 ===
         function renderMembers() {
             const p = getActive();
             const container = document.getElementById('member-badge-container');
@@ -615,7 +610,6 @@
                 container.appendChild(itemDiv);
             });
 
-            // 셀렉트박스 동기화 매칭
             const viewerSel = document.getElementById('app-current-viewer');
             viewerSel.innerHTML = '';
             p.members.forEach(m => {
@@ -646,7 +640,6 @@
             updateBudget();
         }
 
-        // 삭제 전 컨펌 알림창 띄우기 구현 완료
         function deleteTravelMember(name) {
             if(!confirm(`정말로 [${name}] 멤버를 삭제하시겠습니까?\n삭제 시 해당 멤버와 관련된 가계부 데이터 연동도 해제됩니다.`)) return;
             const p = getActive();
@@ -662,7 +655,6 @@
             renderExpenseList();
         }
 
-        // 멤버 이름 수정 제어
         function activateEditMemberMode(idx) {
             document.getElementById(`member-display-name-${idx}`).style.display = 'none';
             document.getElementById(`member-action-box-${idx}`).style.display = 'none';
@@ -686,7 +678,6 @@
                 return;
             }
 
-            // 가계부 및 바인딩된 매칭 이름 전원 업데이트 복사
             p.expenses.forEach(e => { if(e.member === oldName) e.member = newName; });
             if(appData.currentViewer === oldName) appData.currentViewer = newName;
             if(currentBudgetMember === oldName) currentBudgetMember = newName;
@@ -841,7 +832,7 @@
             renderExpenseList();
         }
 
-        // === 🛍️ 위시리스트 로직 ===
+        // === 🛍️ 위시리스트 로직 (수정 및 사진 첨부 지원 전면 적용) ===
         function renderWishCategoryTabs() {
             const container = document.getElementById('wish-tabs-container');
             container.innerHTML = '';
@@ -892,7 +883,7 @@
 
         function deleteWishCat(key, e) {
             e.stopPropagation();
-            if(!confirm("이 카테고리를 삭제할까요? 포함된 쇼핑 품목들의 분류가 초기화됩니다.")) return;
+            if(!confirm("이 카테고리를 삭제할까요? 포함된 아이템들의 분류가 초기화됩니다.")) return;
             appData.wishCategories = appData.wishCategories.filter(c => c.key !== key);
             if(currentWishTab === key) currentWishTab = 'all';
             saveData();
@@ -901,23 +892,35 @@
             renderWishList();
         }
 
-        function addWishItem() {
+        async function addWishItem() {
             const p = getActive();
             const cat = document.getElementById('wish-cat-select').value;
             const title = document.getElementById('wish-title').value.trim();
             const cost = document.getElementById('wish-cost').value.trim();
             const url = document.getElementById('wish-url').value.trim();
             const memo = document.getElementById('wish-memo').value.trim();
+            const imgInput = document.getElementById('wish-img-input');
 
             if(!title) return;
-            p.wishItems.push({ id: Date.now(), cat, title, cost, url, memo, done: false });
-            
-            document.getElementById('wish-title').value = '';
-            document.getElementById('wish-cost').value = '';
-            document.getElementById('wish-url').value = '';
-            document.getElementById('wish-memo').value = '';
-            saveData();
-            renderWishList();
+
+            const saveWish = (imgData) => {
+                p.wishItems.push({ id: Date.now(), cat, title, cost, url, memo, done: false, img: imgData || '' });
+                document.getElementById('wish-title').value = '';
+                document.getElementById('wish-cost').value = '';
+                document.getElementById('wish-url').value = '';
+                document.getElementById('wish-memo').value = '';
+                imgInput.value = '';
+                saveData();
+                renderWishList();
+                if(imgData) openPhotoModal();
+            };
+
+            if(imgInput.files && imgInput.files[0]) {
+                let base64 = await compressImageAsync(imgInput.files[0]);
+                saveWish(b64);
+            } else {
+                saveWish('');
+            }
         }
 
         function renderWishList() {
@@ -935,25 +938,81 @@
             filtered.forEach(item => {
                 const li = document.createElement('li');
                 li.className = 'expense-item';
+                li.style.flexDirection = 'column';
+                li.style.alignItems = 'stretch';
+                
                 let catObj = appData.wishCategories.find(c => c.key === item.cat) || { label: '기타', color: '#64748b' };
-                let linkButton = item.url ? `<a href="${item.url}" target="_blank" class="link-url">🔗 구매 링크 이동</a>` : '';
+                let linkButton = item.url ? `<a href="${item.url}" target="_blank" class="link-url">🔗 링크 이동</a>` : '';
+                let imgBox = item.img ? `<img src="${item.img}" class="attached-img" onclick="openImgViewer('${item.img}')" style="width:55px; height:55px;">` : '';
                 
                 li.innerHTML = `
-                    <div class="expense-left">
-                        <div class="expense-info">
-                            <span class="wish-badge" style="background:${catObj.color}">${catObj.label}</span>
-                            <span style="font-weight:700; ${item.done ? 'text-decoration:line-through; color:var(--gray-muted);':''}">${item.title}</span>
-                            <span class="currency-detail">예상가: ${item.cost || '미정'} | 메모: ${item.memo || '-'}</span>
-                            ${linkButton}
+                    <div style="display:flex; justify-content:between; width:100%; align-items:center;" id="wish-view-box-${item.id}">
+                        <div class="expense-left">
+                            ${imgBox}
+                            <div class="expense-info">
+                                <span class="wish-badge" style="background:${catObj.color}">${catObj.label}</span>
+                                <span style="font-weight:700; ${item.done ? 'text-decoration:line-through; color:var(--gray-muted);':''}">${item.title}</span>
+                                <span class="currency-detail">예상가: ${item.cost || '미정'} | 메모: ${item.memo || '-'}</span>
+                                ${linkButton}
+                            </div>
+                        </div>
+                        <div class="action-btns">
+                            <button class="btn-sub" style="font-size:12px; padding:4px 8px;" onclick="activateWishEditMode(${item.id})">수정</button>
+                            <button class="btn-edit" style="font-size:12px; padding:4px 8px;" onclick="toggleWishDone(${item.id})">${item.done ? '취소' : '완료'}</button>
+                            <button class="btn-del" style="font-size:12px; padding:4px 8px;" onclick="deleteWishItem(${item.id})">삭제</button>
                         </div>
                     </div>
-                    <div class="action-btns">
-                        <button class="btn-edit" onclick="toggleWishDone(${item.id})">${item.done ? '구매취소' : '구매완료'}</button>
-                        <button class="btn-del" onclick="deleteWishItem(${item.id})">삭제</button>
+                    <div class="edit-mode-box" id="wish-edit-box-${item.id}" style="display:none;">
+                        <input type="text" id="wish-edit-title-${item.id}" value="${item.title}" placeholder="품목명">
+                        <input type="text" id="wish-edit-cost-${item.id}" value="${item.cost}" placeholder="예상 가격">
+                        <input type="text" id="wish-edit-url-${item.id}" value="${item.url || ''}" placeholder="링크 URL">
+                        <input type="text" id="wish-edit-memo-${item.id}" value="${item.memo || ''}" placeholder="메모">
+                        <div style="display:flex; gap:10px; align-items:center; margin-top:4px;">
+                            <label class="file-label" style="font-size:12px; padding:6px 10px;">📷 이미지 교체
+                                <input type="file" id="wish-edit-img-${item.id}" class="file-input" accept="image/*">
+                            </label>
+                            <span style="font-size:11px; color:var(--gray-muted);">새로 지정안하면 기존 사진 유지</span>
+                        </div>
+                        <div style="display:flex; gap:6px; justify-content:flex-end; margin-top:8px;">
+                            <button class="btn-main" style="padding:6px 14px; font-size:13px;" onclick="confirmWishEdit(${item.id})">변경 저장</button>
+                            <button class="btn-sub" style="padding:6px 14px; font-size:13px;" onclick="cancelWishEdit(${item.id})">취소</button>
+                        </div>
                     </div>
                 `;
                 listEl.appendChild(li);
             });
+        }
+
+        function activateWishEditMode(id) {
+            document.getElementById(`wish-view-box-${id}`).style.display = 'none';
+            document.getElementById(`wish-edit-box-${id}`).style.display = 'flex';
+        }
+
+        function cancelWishEdit(id) {
+            document.getElementById(`wish-view-box-${id}`).style.display = 'flex';
+            document.getElementById(`wish-edit-box-${id}`).style.display = 'none';
+        }
+
+        async function confirmWishEdit(id) {
+            const p = getActive();
+            let item = p.wishItems.find(w => w.id === id);
+            if(!item) return;
+
+            const newTitle = document.getElementById(`wish-edit-title-${id}`).value.trim();
+            if(!newTitle) return;
+
+            item.title = newTitle;
+            item.cost = document.getElementById(`wish-edit-cost-${id}`).value.trim();
+            item.url = document.getElementById(`wish-edit-url-${id}`).value.trim();
+            item.memo = document.getElementById(`wish-edit-memo-${id}`).value.trim();
+
+            const imgFile = document.getElementById(`wish-edit-img-${id}`).files[0];
+            if(imgFile) {
+                item.img = await compressImageAsync(imgFile);
+            }
+
+            saveData();
+            renderWishList();
         }
 
         function toggleWishDone(id) {
@@ -969,7 +1028,7 @@
             saveData(); renderWishList();
         }
 
-        // === 🧳 체크리스트 로직 (담당자 연동 기능 전면 제거 및 심플 자동화) ===
+        // === 🧳 체크리스트 로직 ===
         function switchPackTab(tab, btn) {
             document.querySelectorAll('#pack-tabs-container .tab-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active'); currentPackTab = tab; renderPack();
@@ -1026,7 +1085,7 @@
             saveData(); renderPack();
         }
 
-        // === 📍 일정 플래너 로직 (지도 주소 참고링크 전면 적용) ===
+        // === 📍 일정 플래너 로직 (수정 모드 및 사진 변경 완전 결합) ===
         function renderDayTabs() {
             const p = getActive();
             const nav = document.getElementById('day-tabs-nav');
@@ -1059,7 +1118,7 @@
             const time = document.getElementById('plan-time').value;
             const location = document.getElementById('plan-location').value.trim();
             const memo = document.getElementById('plan-memo').value.trim();
-            const mapUrl = document.getElementById('plan-map-url').value.trim(); // 지도 웹주소 링크값 추출
+            const mapUrl = document.getElementById('plan-map-url').value.trim(); 
             const imgInput = document.getElementById('plan-img-input');
 
             if(!location) return;
@@ -1096,307 +1155,50 @@
                 if(items.length === 0) return;
                 hasData = true;
 
-                // 시간순 정렬
                 items.sort((a,b) => (a.time || '99:99').localeCompare(b.time || '99:99'));
 
                 items.forEach(item => {
                     const div = document.createElement('div');
                     div.className = 'timeline-item';
+                    div.style.flexDirection = 'column';
+                    div.style.alignItems = 'stretch';
+                    
                     let dayNum = dayKey.replace('day','');
                     let imgTag = item.img ? `<br><img src="${item.img}" class="timeline-img" onclick="openImgViewer('${item.img}')">` : '';
-                    
-                    // 핵심: 웹주소가 입력되었을때만 [참고 링크] 버튼 생성 제어 자동화 구현 완료
                     let linkButton = item.mapUrl ? `<a href="${item.mapUrl}" target="_blank" class="btn-sub" style="display:inline-block; margin-top:6px; font-size:11px; padding:4px 8px; text-decoration:none;">🔗 참고 링크</a>` : '';
 
                     div.innerHTML = `
-                        <div>
-                            ${currentDayTab === 'all' ? `<span class="day-badge">Day ${dayNum}</span> ` : ''}
-                            <span class="time">⏰ ${item.time || '시간 미정'}</span>
-                            <div class="location">${item.location}</div>
-                            <div class="memo">${item.memo || ''}</div>
-                            ${linkButton}
-                            ${imgTag}
+                        <div style="display:flex; justify-content:space-between; align-items:flex-start; width:100%;" id="plan-view-box-${item.id}">
+                            <div>
+                                ${currentDayTab === 'all' ? `<span class="day-badge">Day ${dayNum}</span> ` : ''}
+                                <span class="time">⏰ ${item.time || '시간 미정'}</span>
+                                <div class="location">${item.location}</div>
+                                <div class="memo">${item.memo || ''}</div>
+                                ${linkButton}
+                                ${imgTag}
+                            </div>
+                            <div class="action-btns">
+                                <button class="btn-edit" style="font-size:12px; padding:4px 8px;" onclick="activatePlanEditMode('${dayKey}', ${item.id})">수정</button>
+                                <button class="btn-del" style="font-size:12px; padding:4px 8px;" onclick="deleteTimelineItem('${dayKey}', ${item.id})">삭제</button>
+                            </div>
                         </div>
-                        <button class="btn-del" onclick="deleteTimelineItem('${dayKey}', ${item.id})">삭제</button>
-                    `;
-                    container.appendChild(div);
-                });
-            });
+                        
+                        <div class="edit-mode-box" id="plan-edit-box-${item.id}" style="display:none;">
+                            <span style="font-size:12px; font-weight:700; color:var(--primary-color);">일정 편집 모드</span>
+                            <div style="display:flex; gap:8px;">
+                                <input type="time" id="plan-edit-time-${item.id}" value="${item.time || ''}" style="max-width:120px;">
+                                <input type="text" id="plan-edit-location-${item.id}" value="${item.location}" placeholder="장소명">
+                            </div>
+                            <input type="text" id="plan-edit-memo-${item.id}" value="${item.memo || ''}" placeholder="메모">
+                            <input type="text" id="plan-edit-map-${item.id}" value="${item.mapUrl || ''}" placeholder="지도/참고 웹 주소">
+                            
+                            <div style="display:flex; gap:10px; align-items:center; margin-top:4px;">
+                                <label class="file-label" style="font-size:12px; padding:6px 10px;">📷 일정 이미지 교체/추가
+                                    <input type="file" id="plan-edit-img-${item.id}" class="file-input" accept="image/*">
+                                </label>
+                                <span style="font-size:11px; color:var(--gray-muted);">새 파일 선택 시 기존 사진 대체됨</span>
+                            </div>
 
-            if(!hasData) {
-                container.innerHTML = '<p style="font-size:13px; color:var(--gray-muted); text-align:center; padding:20px;">해당 일정 계획이 등록되지 않았습니다.</p>';
-            }
-        }
-
-        function deleteTimelineItem(dayKey, id) {
-            const p = getActive();
-            if(p.targetSchedule[dayKey]) {
-                p.targetSchedule[dayKey] = p.targetSchedule[dayKey].filter(item => item.id !== id);
-                saveData(); renderTimeline();
-            }
-        }
-
-        // === 📖 여행 일기/사진첩 로직 (다중 이미지 업로드 대변혁 완료) ===
-        function addDiary() {
-            const p = getActive();
-            const date = document.getElementById('diary-date-select').value;
-            const text = document.getElementById('diary-text-input').value.trim();
-            const files = document.getElementById('diary-img-input').files;
-
-            if(!text && files.length === 0) return;
-
-            // 프로미스 배열 구조로 복수 이미지 완전 압축 동시 연동 구현
-            let compressPromises = [];
-            for(let i=0; i<files.length; i++) {
-                compressPromises.push(compressImageAsync(files[i]));
-            }
-
-            Promise.all(compressPromises).then(imgBase64Array => {
-                p.diaries.push({ id: Date.now(), date, text, imgs: imgBase64Array }); // 단일스토리지 배열 적재
-                document.getElementById('diary-text-input').value = '';
-                document.getElementById('diary-img-input').value = '';
-                saveData();
-                renderDiaries();
-                if(imgBase64Array.length > 0) openPhotoModal();
-            });
-        }
-
-        function renderDiaries() {
-            const p = getActive();
-            const container = document.getElementById('diary-container');
-            container.innerHTML = '';
-
-            if(p.diaries.length === 0) {
-                container.innerHTML = '<p style="font-size:13px; color:var(--gray-muted); text-align:center; padding:20px;">작성된 여행 일기가 없습니다.</p>';
-                return;
-            }
-
-            p.diaries.sort((a,b) => b.date.localeCompare(a.date) || b.id - a.id).forEach(item => {
-                const div = document.createElement('div');
-                div.className = 'diary-card';
-                
-                // 복수 썸네일 이미지 그리드 렌더링 주입 개편
-                let imagesLayout = '';
-                if(item.imgs && item.imgs.length > 0) {
-                    imagesLayout += `<div class="diary-img-container">`;
-                    item.imgs.forEach(imgBase64 => {
-                        imagesLayout += `<img src="${imgBase64}" class="diary-img" onclick="openImgViewer('${imgBase64}')">`;
-                    });
-                    imagesLayout += `</div>`;
-                } else if(item.img) { // 올드 단일 포맷 버전 자동 방어 하이브리드 대응
-                    imagesLayout = `<div class="diary-img-container"><img src="${item.img}" class="diary-img" onclick="openImgViewer('${item.img}')"></div>`;
-                }
-
-                div.innerHTML = `
-                    <div style="display:flex; justify-content:between; align-items:center; width:100%; justify-content:space-between; margin-bottom:8px;">
-                        <span class="diary-date">📅 ${item.date}의 여행 기록</span>
-                        <button class="btn-del" onclick="deleteDiary(${item.id})">삭제</button>
-                    </div>
-                    ${imagesLayout}
-                    <div class="diary-text">${item.text || '사진만 보관된 일기입니다.'}</div>
-                `;
-                container.appendChild(div);
-            });
-        }
-
-        function deleteDiary(id) {
-            const p = getActive();
-            p.diaries = p.diaries.filter(d => d.id !== id);
-            saveData(); renderDiaries();
-        }
-
-        // === 날짜 셀렉터 인덱스 싱크 연동 ===
-        function refreshDateSelectors() {
-            const p = getActive();
-            const start = new Date(p.startDate); const end = new Date(p.endDate);
-            
-            let list = [];
-            if(!isNaN(start) && !isNaN(end) && start <= end) {
-                let curr = new Date(start);
-                while(curr <= end) {
-                    list.push(curr.toISOString().split('T')[0]);
-                    curr.setDate(curr.getDate() + 1);
-                }
-            } else {
-                list.push(new Date().toISOString().split('T')[0]);
-            }
-
-            const expSel = document.getElementById('expense-date-select');
-            const diarySel = document.getElementById('diary-date-select');
-            
-            expSel.innerHTML = ''; diarySel.innerHTML = '';
-            list.forEach(d => {
-                expSel.innerHTML += `<option value="${d}">${d}</option>`;
-                diarySel.innerHTML += `<option value="${d}">${d}</option>`;
-            });
-        }
-
-        function updateTravelPeriod() {
-            const p = getActive();
-            p.startDate = document.getElementById('travel-start-date').value;
-            p.endDate = document.getElementById('travel-end-date').value;
-            
-            const start = new Date(p.startDate); const end = new Date(p.endDate);
-            if(!isNaN(start) && !isNaN(end) && start <= end) {
-                p.daysCount = Math.ceil((end - start) / (1000 * 60 * 60 * 24)) + 1;
-            } else { p.daysCount = 1; }
-
-            // 스케줄 초기 객체 보존 스키마 복원
-            for(let i=1; i<=p.daysCount; i++) {
-                if(!p.targetSchedule['day'+i]) p.targetSchedule['day'+i] = [];
-            }
-
-            saveData();
-            refreshDateSelectors();
-            renderDayTabs();
-            renderTimeline();
-            updateDurationText();
-        }
-
-        function updateDurationText() {
-            const p = getActive();
-            document.getElementById('duration-text').innerText = `✈️ 여행 일정 : ${p.startDate} ~ ${p.endDate} (${p.daysCount}일간)`;
-        }
-
-        // === 📁 폴더(프로젝트) 관리 시스템 ===
-        function initProjectDropdown() {
-            const picker = document.getElementById('travel-picker');
-            picker.innerHTML = '';
-            Object.keys(appData.projects).forEach(key => {
-                const opt = document.createElement('option'); opt.value = key; opt.textContent = key;
-                if(appData.currentProject === key) opt.selected = true;
-                picker.appendChild(opt);
-            });
-        }
-
-        function createNewTravel() {
-            const name = document.getElementById('new-travel-name').value.trim();
-            if(!name) return;
-            if(appData.projects[name]) { alert("이미 존재하는 다이어리 폴더 이름입니다."); return; }
-            
-            const today = new Date().toISOString().split('T')[0];
-            appData.projects[name] = {
-                members: [{ name: "기본멤버", budget: 1000000 }],
-                startDate: today, endDate: today, expenses: [], wishItems: [], packItems: [], daysCount: 1,
-                targetSchedule: { day1:[] }, diaries: []
-            };
-            appData.currentProject = name;
-            document.getElementById('new-travel-name').value = '';
-            saveData(); initProjectDropdown(); loadProjectAll();
-        }
-
-        function changeTravel() {
-            appData.currentProject = document.getElementById('travel-picker').value;
-            saveData(); loadProjectAll();
-        }
-
-        function deleteTravelProject() {
-            if(Object.keys(appData.projects).length <= 1) { alert("최소 한 개의 여행 폴더는 존재해야 합니다."); return; }
-            if(confirm(`현재 선택된 다이어리 폴더 [${appData.currentProject}]와 내부 데이터 전체를 삭제할까요?`)) { 
-                delete appData.projects[appData.currentProject]; 
-                appData.currentProject = Object.keys(appData.projects)[0]; 
-                saveData(); initProjectDropdown(); loadProjectAll(); 
-            }
-        }
-
-        function loadProjectAll() {
-            const p = getActive();
-            document.getElementById('travel-start-date').value = p.startDate; 
-            document.getElementById('travel-end-date').value = p.endDate;
-            
-            updateDurationText();
-            refreshDateSelectors(); 
-            renderMembers();
-            renderWishCategoryTabs(); 
-            renderWishCatSelect(); 
-            renderDayTabs();
-            renderBudgetMemberTabs();
-            updateBudget(); 
-            renderExpenseList(); 
-            renderWishList(); 
-            renderPack(); 
-            renderTimeline(); 
-            renderDiaries(); 
-            fetchWeather();
-        }
-
-        function switchExpenseTab(target, btnElement) {
-            document.querySelectorAll('#expense-tabs-container .tab-btn').forEach(b => b.classList.remove('active'));
-            btnElement.classList.add('active'); currentExpenseTab = target; renderExpenseList();
-        }
-
-        // === 라이트박스 및 기타 헬퍼 핸들러 ===
-        function openPhotoModal() { document.getElementById('photo-modal').style.display = 'flex'; }
-        function closePhotoModal() { document.getElementById('photo-modal').style.display = 'none'; }
-        function openImgViewer(src) { document.getElementById('img-viewer-src').src = src; document.getElementById('img-viewer').style.display = 'flex'; }
-        function closeImgViewer() { document.getElementById('img-viewer').style.display = 'none'; }
-
-        // === 데이터 외부 백업 시스템 ===
-        function exportDataBackup() {
-            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(appData));
-            const dlAnchor = document.createElement('a');
-            dlAnchor.setAttribute("href", dataStr);
-            dlAnchor.setAttribute("download", `travel_archive_backup_${new Date().toISOString().split('T')[0]}.json`);
-            document.body.appendChild(dlAnchor); dlAnchor.click(); dlAnchor.remove();
-        }
-
-        function importDataBackup(input) {
-            if (!input.files || !input.files[0]) return;
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const imported = JSON.parse(e.target.result);
-                    if(imported.projects && imported.currentProject) {
-                        appData = imported; saveData(); alert("백업 데이터가 성공적으로 정상 복구되었습니다!"); loadProjectAll(); initProjectDropdown();
-                    } else { alert("올바른 백업 파일 규격 형식이 아닙니다."); }
-                } catch(err) { alert("파일 내용을 읽는 도중 오류가 발생했습니다."); }
-            };
-            reader.readAsText(input.files[0]);
-        }
-
-        function forceResetApp() {
-            if(confirm("🚨 주의: 앱을 초기화하면 복구할 수 없습니다.\n정말로 모든 여행 데이터 기록을 초기화할까요?")) {
-                localStorage.removeItem('travelArchiveData_v7_modern'); appData = null; initStorage(); initProjectDropdown(); loadProjectAll();
-            }
-        }
-
-        // === 외부 OpenWeather 날씨 API 통신 연동 ===
-        function fetchWeather() {
-            const city = document.getElementById('weather-city-select').value;
-            const container = document.getElementById('weather-body-content');
-            
-            // 무료 API 특성상 실시간 고유 Key가 필요하므로 더미 UI 스키마 가이드로 동기화 처리
-            const fakeData = {
-                Tokyo: { temp: '21°C', text: '🌤️ 대체로 맑음 | 습도 45%\n일본 도쿄 중심부' },
-                Osaka: { temp: '23°C', text: '☀️ 맑음 | 습도 40%\n일본 오사카 오사카성 인근' },
-                Fukuoka: { temp: '19°C', text: '☁️ 흐림 | 습도 65%\n일본 후쿠오카 하카타역 인근' },
-                Nagoya: { temp: '22°C', text: '☀️ 아주 맑음 | 습도 38%\n일본 아이치현 나고야' },
-                Sapporo: { temp: '11°C', text: '🌧️ 가벼운 비 | 습도 80%\n일본 홋카이도 삿포로' },
-                Seoul: { temp: '18°C', text: '🌤️ 구름 조금 | 습도 50%\n대한민국 서울특별시' }
-            };
-
-            if (fakeData[city]) {
-                container.innerHTML = `
-                    <div class="weather-temp">${fakeData[city].temp}</div>
-                    <div class="weather-info">${fakeData[city].text.replace('\n', '<br>')}</div>
-                `;
-            }
-        }
-        
-        async function fetchExchangeRates() {
-            try {
-                const res = await fetch('https://open.er-api.com/v6/latest/KRW');
-                if(res.ok) {
-                    const data = await res.json();
-                    if(data && data.rates) {
-                        exchangeRates.USD = Math.round(1 / data.rates.USD);
-                        exchangeRates.JPY = Math.round((1 / data.rates.JPY) * 100 * 10) / 10;
-                        exchangeRates.CNY = Math.round(1 / data.rates.CNY);
-                        updateBudget();
-                    }
-                }
-            } catch(e) {}
-        }
-    </script>
-</body>
-</html>
+                            <div style="display:flex; gap:6px; justify-content:flex-end; margin-top:8px;">
+                                <button class="btn-main" style="padding:6px 14px; font-size:13px;" onclick="confirmPlanEdit('${dayKey}', ${item.id})">일정 저장</button>
+                                <button class="btn-sub" style="padding:6px 14px; font-size:13
